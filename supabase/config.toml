@@ -1,0 +1,15 @@
+project_id = "bnz-gestion"
+
+# Configuración de las funciones para la CLI de Supabase.
+# "ia" exige sesión iniciada (solo vos podés usarla desde el sitio).
+# "whatsapp" la llama Meta y "recordatorios" la llama el cron: no usan sesión,
+# se protegen con la firma de Meta y con CRON_SECRET.
+
+[functions.ia]
+verify_jwt = true
+
+[functions.whatsapp]
+verify_jwt = false
+
+[functions.recordatorios]
+verify_jwt = false

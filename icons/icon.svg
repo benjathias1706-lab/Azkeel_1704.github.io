@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" fill="#262626"/>
+  <g fill="none" stroke="#F7E7D7" stroke-opacity=".08" stroke-width="2">
+    <path d="M0 128H512M0 256H512M0 384H512M128 0V512M256 0V512M384 0V512"/>
+  </g>
+  <text x="256" y="300" text-anchor="middle" font-family="Montserrat, 'Arial Black', Arial, sans-serif" font-weight="900" font-size="150" letter-spacing="-4" fill="#F7E7D7">BNZ</text>
+  <rect x="96" y="340" width="320" height="10" rx="5" fill="#D4A47A"/>
+</svg>

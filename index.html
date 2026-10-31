@@ -1,0 +1,1708 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Gestión personal de Benjamín Nuñez · Design | BNZ: tareas, economía, cronograma, presupuestos e IA.">
+<meta name="theme-color" content="#262626">
+<meta name="robots" content="noindex, nofollow">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Design BNZ Gestión</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: barra lateral tinta (escritorio) → riel de íconos (tablet) → pestañas abajo (celular). Inicio = menú con mosaicos animados.
+   Paleta de la marca: papel #F7E7D7 y tinta #262626; en oscuro se invierten. Cobre como acento. */
+:root{
+  --tinta:#262626; --papel:#F7E7D7;
+  --bg:#F7E7D7; --surface:#FCF6F0; --surface-2:#F0DFCD; --line:#E0CBB6; --line-strong:#C9B19A;
+  --fg:#262626; --fg-2:#574E46; --fg-3:#857869;
+  --accent:#8E5F3A; --accent-soft:#EBD3BC; --accent-ink:#FCF6F0;
+  --side-bg:#262626; --side-fg:#F7E7D7; --side-fg-2:#B8A99A; --side-line:#3A3734;
+  --good:#3B7449; --good-soft:#DCE9DA; --bad:#A8412F; --bad-soft:#F3D6CE; --warn:#8F6512; --warn-soft:#F2E2BF;
+  --wa:#1F7A4D;
+  --shadow:0 1px 2px rgba(38,38,38,.06), 0 8px 24px rgba(38,38,38,.08);
+  --shadow-up:0 2px 4px rgba(38,38,38,.08), 0 18px 40px rgba(38,38,38,.14);
+  --f-display:'Montserrat','Segoe UI',Roboto,Arial,sans-serif;
+  --f-body:'Montserrat','Segoe UI',Roboto,Arial,sans-serif;
+  --f-mono:'IBM Plex Mono',ui-monospace,'Cascadia Mono',Consolas,monospace;
+  --r:12px; --r-sm:7px;
+  --ease:cubic-bezier(.2,.8,.2,1);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#262626; --surface:#2F2D2B; --surface-2:#383532; --line:#45403B; --line-strong:#5A534C;
+    --fg:#F7E7D7; --fg-2:#D3C4B5; --fg-3:#A09284;
+    --accent:#D4A47A; --accent-soft:#4A3B2E; --accent-ink:#262626;
+    --side-bg:#1C1C1C; --side-fg:#F7E7D7; --side-fg-2:#A89A8C; --side-line:#34312E;
+    --good:#82C292; --good-soft:#2E3D31; --bad:#EC917F; --bad-soft:#4A2F29; --warn:#E3B567; --warn-soft:#463A22;
+    --wa:#6FCF9B;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25);
+    --shadow-up:0 2px 4px rgba(0,0,0,.35), 0 18px 40px rgba(0,0,0,.4);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#262626; --surface:#2F2D2B; --surface-2:#383532; --line:#45403B; --line-strong:#5A534C;
+  --fg:#F7E7D7; --fg-2:#D3C4B5; --fg-3:#A09284;
+  --accent:#D4A47A; --accent-soft:#4A3B2E; --accent-ink:#262626;
+  --side-bg:#1C1C1C; --side-fg:#F7E7D7; --side-fg-2:#A89A8C; --side-line:#34312E;
+  --good:#82C292; --good-soft:#2E3D31; --bad:#EC917F; --bad-soft:#4A2F29; --warn:#E3B567; --warn-soft:#463A22;
+  --wa:#6FCF9B;
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25);
+  --shadow-up:0 2px 4px rgba(0,0,0,.35), 0 18px 40px rgba(0,0,0,.4);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{min-height:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.2}
+a{color:inherit}
+.num,.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* ---------- Animaciones ---------- */
+@keyframes rise{from{transform:translateY(16px) scale(.985);opacity:.2}to{transform:none;opacity:1}}
+@keyframes fade{from{opacity:.2}to{opacity:1}}
+@keyframes slideIn{from{transform:translateY(10px);opacity:.3}to{transform:none;opacity:1}}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.25)}100%{transform:scale(1)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+@keyframes shimmer{from{background-position:-200px 0}to{background-position:calc(200px + 100%) 0}}
+@keyframes barra{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@keyframes toastIn{from{transform:translateY(16px);opacity:0}to{transform:none;opacity:1}}
+@keyframes dots{0%{content:''}25%{content:'.'}50%{content:'..'}75%{content:'...'}}
+@keyframes splashBar{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@keyframes splashOut{to{opacity:0;visibility:hidden}}
+.entrar > *{animation:slideIn .38s var(--ease) both}
+.entrar > *:nth-child(2){animation-delay:.04s} .entrar > *:nth-child(3){animation-delay:.08s} .entrar > *:nth-child(4){animation-delay:.12s} .entrar > *:nth-child(5){animation-delay:.16s} .entrar > *:nth-child(6){animation-delay:.2s}
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+/* ---------- Splash ---------- */
+#splash{position:fixed;inset:0;z-index:100;background:var(--tinta);color:var(--papel);display:grid;place-items:center;animation:splashOut .35s ease 1.1s forwards}
+#splash.fuera{animation:splashOut .3s ease forwards}
+#splash .lg{display:flex;align-items:center;gap:14px;font-family:var(--f-display);font-weight:900;font-size:clamp(34px,8vw,64px);letter-spacing:-.02em}
+#splash .lg i{display:block;width:3px;height:1.05em;background:var(--papel);opacity:.55;transform-origin:center;animation:splashBar .6s var(--ease) .1s both}
+#splash .lg span{animation:rise .6s var(--ease) both}
+#splash .lg span:last-child{animation-delay:.12s}
+#splash small{display:block;text-align:center;margin-top:14px;letter-spacing:.32em;font-size:11px;text-transform:uppercase;opacity:.75;animation:fade .8s ease .3s both}
+
+/* ---------- Controles ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 14px;border-radius:var(--r-sm);border:1px solid var(--line-strong);background:var(--surface);color:var(--fg);font-weight:600;font-size:13px;cursor:pointer;white-space:nowrap;text-decoration:none;transition:background .15s,border-color .15s,transform .12s var(--ease),box-shadow .15s}
+.btn:hover{background:var(--surface-2)}
+.btn:active{transform:scale(.96)}
+.btn svg{width:16px;height:16px;flex:none}
+.btn-primary{background:var(--fg);border-color:var(--fg);color:var(--bg)}
+.btn-primary:hover{background:var(--fg-2);border-color:var(--fg-2)}
+.btn-accent{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn-accent:hover{filter:brightness(1.07);background:var(--accent)}
+.btn-ghost{background:transparent;border-color:transparent;color:var(--fg-2);padding:6px 8px}
+.btn-ghost:hover{background:var(--surface-2);color:var(--fg)}
+.btn-ghost.danger:hover{color:var(--bad);background:var(--bad-soft)}
+.btn-ghost[data-confirm="1"]{color:var(--bad);background:var(--bad-soft)}
+.btn-sm{padding:6px 10px;font-size:12px}
+.btn-wa{color:var(--wa)}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+label.lbl{display:block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--fg-3);margin-bottom:5px}
+.inp{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--surface);font-size:13.5px;min-width:0;transition:border-color .15s,box-shadow .15s}
+.inp:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+textarea.inp{resize:vertical;min-height:64px;line-height:1.45}
+.inp.num{text-align:right;font-family:var(--f-mono)}
+.campo{display:flex;flex-direction:column;min-width:0}
+.seg{display:inline-flex;border:1px solid var(--line-strong);border-radius:var(--r-sm);overflow:hidden;background:var(--surface)}
+.seg button{border:0;background:transparent;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--fg-2);cursor:pointer;border-right:1px solid var(--line);transition:background .15s,color .15s}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--fg);color:var(--bg)}
+.chip{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--surface-2);color:var(--fg-2);white-space:nowrap}
+.pill{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px;border:1px solid var(--line-strong);color:var(--fg-2);white-space:nowrap;font-family:var(--f-mono)}
+.pill.venc{border-color:transparent;background:var(--bad-soft);color:var(--bad)}
+.pill.hoy{border-color:transparent;background:var(--warn-soft);color:var(--warn)}
+.pill.alta{border-color:transparent;background:var(--accent-soft);color:var(--accent)}
+.pill.ok{border-color:transparent;background:var(--good-soft);color:var(--good)}
+.vacio{padding:18px;border:1px dashed var(--line-strong);border-radius:var(--r);color:var(--fg-3);font-size:13px;text-align:center}
+.skel{height:14px;border-radius:6px;background:linear-gradient(90deg,var(--surface-2) 0,var(--line) 40%,var(--surface-2) 80%) var(--surface-2);background-size:200px 100%;background-repeat:no-repeat;animation:shimmer 1.2s infinite linear}
+
+/* ---------- Estructura ---------- */
+#app{display:grid;grid-template-columns:240px minmax(0,1fr);min-height:100vh}
+.side{background:var(--side-bg);color:var(--side-fg);padding:22px 14px;display:flex;flex-direction:column;gap:22px;position:sticky;top:0;height:100vh;height:100dvh;overflow-y:auto}
+.marca{display:block;cursor:pointer;background:none;border:0;padding:0 4px;text-align:left;color:inherit}
+.marca .n{font-family:var(--f-display);font-weight:900;font-size:21px;letter-spacing:-.015em;display:flex;align-items:center;gap:8px}
+.marca .n i{width:2px;height:20px;background:var(--side-fg);opacity:.5;display:block}
+.marca .l{font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--side-fg-2);margin-top:6px}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav a{position:relative;display:flex;align-items:center;gap:11px;padding:9px 10px;border-radius:var(--r-sm);color:var(--side-fg-2);text-decoration:none;font-weight:600;font-size:13.5px;transition:color .15s,background .2s}
+.nav a:hover{color:var(--side-fg);background:rgba(247,231,215,.07)}
+.nav a[aria-current="page"]{color:var(--tinta);background:var(--papel)}
+.nav svg{width:18px;height:18px;flex:none}
+.nav .cnt{margin-left:auto;font-family:var(--f-mono);font-size:11px;opacity:.85}
+.side-pie{margin-top:auto;display:grid;gap:10px;font-size:12px;color:var(--side-fg-2)}
+.side-pie button{background:transparent;border:1px solid var(--side-line);color:var(--side-fg-2);border-radius:var(--r-sm);padding:7px 10px;font-size:12px;font-weight:600;cursor:pointer;text-align:left}
+.side-pie button:hover{color:var(--side-fg);border-color:var(--side-fg-2)}
+.sync{display:inline-flex;align-items:center;gap:7px;font-family:var(--f-mono);font-size:11px}
+.sync i{width:8px;height:8px;border-radius:50%;background:var(--side-fg-2);display:inline-block;flex:none}
+.sync[data-s="ok"] i{background:#7DBE8C}
+.sync[data-s="guardando"] i{background:#E3B567;animation:pulse 1s infinite}
+.sync[data-s="error"] i{background:#EC917F}
+.sync[data-s="local"] i{background:#E3B567}
+
+main{min-width:0;padding-block:28px 64px;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
+@media (min-width:900px){ main{padding-left:34px;padding-right:34px} }
+.wrap{max-width:1200px;margin:0 auto;display:grid;gap:22px}
+.cab{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.cab .eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--fg-3);font-weight:700}
+.cab h1{font-size:28px;font-weight:800;letter-spacing:-.015em;margin-top:4px}
+.cab p{margin:6px 0 0;color:var(--fg-2);max-width:62ch}
+.acciones{display:flex;gap:8px;flex-wrap:wrap}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;min-width:0}
+.panel-h{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.panel-h h2{font-size:15px;font-weight:700}
+.panel-h .sub{font-size:12px;color:var(--fg-3)}
+.g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+@media (max-width:1020px){ .g3{grid-template-columns:minmax(0,1fr)} }
+@media (max-width:820px){ .g2{grid-template-columns:minmax(0,1fr)} }
+.aviso{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;font-size:13px;padding:12px 14px;border-radius:var(--r-sm);background:var(--warn-soft);color:var(--warn);font-weight:600}
+.aviso .btn{color:var(--fg)}
+
+/* ---------- Inicio / menú ---------- */
+.hero{position:relative;overflow:hidden;background:var(--tinta);color:var(--papel);border-radius:calc(var(--r) + 4px);padding:26px 26px 24px;display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:26px;align-items:end}
+.hero::before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(247,231,215,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(247,231,215,.06) 1px,transparent 1px);background-size:28px 28px;pointer-events:none}
+.hero > *{position:relative}
+.hero .fecha{font-size:11px;letter-spacing:.2em;text-transform:uppercase;opacity:.7;font-weight:700}
+.hero .reloj{font-family:var(--f-mono);font-size:clamp(44px,7vw,76px);font-weight:500;line-height:1;margin-top:10px;letter-spacing:-.02em}
+.hero h1{font-size:clamp(20px,2.6vw,26px);font-weight:800;margin-top:12px}
+.hero p{margin:6px 0 0;opacity:.8;font-size:13.5px;max-width:52ch}
+.hero-ia{background:rgba(247,231,215,.08);border:1px solid rgba(247,231,215,.18);border-radius:var(--r);padding:12px;display:grid;gap:10px}
+.hero-ia label{font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;opacity:.8}
+.hero-ia textarea{width:100%;min-height:74px;resize:vertical;border-radius:var(--r-sm);border:1px solid rgba(247,231,215,.22);background:rgba(0,0,0,.18);color:var(--papel);padding:10px 12px;font-size:13.5px;line-height:1.45}
+.hero-ia textarea::placeholder{color:rgba(247,231,215,.5)}
+.hero-ia textarea:focus{outline:none;border-color:var(--papel)}
+.hero-ia .fila{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;font-size:11.5px;opacity:.9}
+.hero-ia .btn{background:var(--papel);color:var(--tinta);border-color:var(--papel)}
+@media (max-width:860px){ .hero{grid-template-columns:minmax(0,1fr);padding:22px 18px} }
+
+.mosaico{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}
+@media (max-width:1180px){ .mosaico{grid-template-columns:repeat(3,minmax(0,1fr))} .tile.ia{grid-column:span 2} }
+@media (max-width:640px){ .mosaico{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px} }
+.tile{position:relative;display:flex;flex-direction:column;justify-content:space-between;gap:16px;min-height:150px;padding:16px;border-radius:var(--r);background:var(--surface);border:1px solid var(--line);text-align:left;cursor:pointer;color:var(--fg);overflow:hidden;animation:rise .5s var(--ease) both;transition:transform .25s var(--ease),box-shadow .25s var(--ease),border-color .2s}
+.tile:nth-child(2){animation-delay:.05s}.tile:nth-child(3){animation-delay:.1s}.tile:nth-child(4){animation-delay:.15s}.tile:nth-child(5){animation-delay:.2s}
+.tile:hover{transform:translateY(-4px);box-shadow:var(--shadow-up);border-color:var(--line-strong)}
+.tile:active{transform:translateY(-1px) scale(.99)}
+.tile .ic{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;background:var(--surface-2);transition:transform .3s var(--ease),background .2s}
+.tile:hover .ic{transform:rotate(-6deg) scale(1.06)}
+.tile .ic svg{width:21px;height:21px}
+.tile .t{font-weight:800;font-size:15px}
+.tile .d{font-size:12px;color:var(--fg-2);margin-top:2px}
+.tile .big{font-family:var(--f-mono);font-size:24px;font-weight:500;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tile .flecha{position:absolute;top:16px;right:16px;opacity:.35;transition:transform .25s var(--ease),opacity .2s}
+.tile:hover .flecha{transform:translateX(3px);opacity:.9}
+.tile.ia{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.tile.ia .ic{background:rgba(255,255,255,.18)}
+.tile.ia .d{color:inherit;opacity:.85}
+@media (max-width:640px){ .tile{min-height:122px;padding:13px} .tile .big{font-size:19px} .tile.ia{grid-column:1/-1;min-height:96px} }
+
+/* Tira de cifras */
+.cifras{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.cifra{padding:16px 18px;border-right:1px solid var(--line);min-width:0}
+.cifra:last-child{border-right:0}
+.cifra small{display:block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--fg-3);font-weight:700}
+.cifra b{display:block;font-family:var(--f-mono);font-weight:500;font-size:22px;margin-top:6px;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cifra span{font-size:12px;color:var(--fg-2)}
+.cifra b.pos{color:var(--good)} .cifra b.neg{color:var(--bad)}
+@media (max-width:600px){ .cifra{border-right:0;border-bottom:1px solid var(--line)} .cifra:last-child{border-bottom:0} }
+
+/* Formularios en fila */
+.form-fila{display:grid;gap:10px;align-items:end}
+.form-tarea{grid-template-columns:minmax(0,2.4fr) minmax(0,1.3fr) minmax(0,1fr) minmax(0,1fr) minmax(0,.9fr) auto}
+.form-evento{grid-template-columns:minmax(0,2fr) minmax(0,1fr) minmax(0,.8fr) minmax(0,1.2fr) minmax(0,1fr) auto}
+.form-mov{grid-template-columns:minmax(0,1fr) minmax(0,2fr) minmax(0,1fr) minmax(0,1.2fr) minmax(0,1fr) auto}
+@media (max-width:1100px){ .form-tarea,.form-evento,.form-mov{grid-template-columns:repeat(2,minmax(0,1fr))} .form-fila .ancho{grid-column:1/-1} }
+.extra{display:flex;gap:16px;flex-wrap:wrap;align-items:center;margin-top:10px;font-size:12.5px;color:var(--fg-2)}
+.extra label{display:inline-flex;align-items:center;gap:6px;cursor:pointer}
+.extra .inp{width:auto;flex:1;min-width:180px}
+
+/* Tareas */
+.filtros{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.filtros .inp{width:auto}
+.col{min-width:0;border-radius:var(--r);transition:background .2s,box-shadow .2s;padding:2px}
+.col.sobre{background:var(--accent-soft);box-shadow:0 0 0 2px var(--accent)}
+.col-h{display:flex;align-items:baseline;justify-content:space-between;padding-bottom:10px;border-bottom:2px solid var(--fg);margin-bottom:10px}
+.col-h h3{font-size:14px;font-weight:800;letter-spacing:.02em;text-transform:uppercase}
+.col-h span{font-family:var(--f-mono);font-size:12px;color:var(--fg-3)}
+.lista{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.tarea{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:start;padding:11px 10px 11px 12px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-sm);transition:transform .2s var(--ease),box-shadow .2s,opacity .25s}
+.tarea[draggable="true"]{cursor:grab}
+.tarea:hover{box-shadow:var(--shadow)}
+.tarea.arrastrando{opacity:.4}
+.tarea.saliendo{opacity:.3;transform:translateX(10px)}
+.tarea.hecha .t-titulo{text-decoration:line-through;color:var(--fg-3)}
+.check{width:21px;height:21px;border-radius:6px;border:1.5px solid var(--line-strong);background:var(--surface);display:grid;place-items:center;cursor:pointer;padding:0;margin-top:1px;color:transparent;transition:background .15s,border-color .15s}
+.check:hover{border-color:var(--fg)}
+.hecha .check{background:var(--fg);border-color:var(--fg);color:var(--bg)}
+.check.pop{animation:pop .3s var(--ease)}
+.check svg{width:12px;height:12px}
+.t-titulo{font-weight:600;font-size:13.5px;overflow-wrap:anywhere}
+.t-meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;align-items:center}
+.t-nota{font-size:12.5px;color:var(--fg-2);margin-top:5px;overflow-wrap:anywhere}
+.t-acc{display:flex;gap:2px;flex-wrap:wrap;justify-content:flex-end}
+.t-acc .btn-ghost{font-size:12px}
+.mini-link{font-size:11px;font-weight:600;color:var(--fg-3);text-decoration:none;border-bottom:1px dotted currentColor}
+.mini-link:hover{color:var(--accent)}
+.mini-link.wa:hover{color:var(--wa)}
+
+/* Tablas */
+.tabla-wrap{overflow-x:auto}
+table.t{width:100%;border-collapse:collapse;font-size:13px}
+table.t th{text-align:left;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--fg-3);font-weight:700;padding:8px;border-bottom:1px solid var(--line-strong)}
+table.t td{padding:8px;border-bottom:1px solid var(--line);vertical-align:middle}
+table.t td.r,table.t th.r{text-align:right}
+table.t .monto{font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+table.t tfoot td{font-weight:700;border-bottom:0;border-top:2px solid var(--fg)}
+table.t tbody tr{animation:fade .3s ease both}
+.pos{color:var(--good)} .neg{color:var(--bad)}
+
+/* Listas editables */
+.ed-lista{display:grid;gap:6px}
+.ed-fila{display:grid;grid-template-columns:minmax(0,1fr) 108px auto;gap:6px;align-items:center}
+.ed-fila.con-check{grid-template-columns:auto minmax(0,1fr) 108px auto}
+.ed-fila.con-tipo{grid-template-columns:auto minmax(0,1fr) 108px 104px auto}
+.ed-fila .inp{padding:7px 9px;font-size:13px}
+.ed-fila.hecho .inp:not(.num){text-decoration:line-through;color:var(--fg-3)}
+.ed-total{display:flex;justify-content:space-between;align-items:baseline;border-top:2px solid var(--fg);margin-top:12px;padding-top:10px;font-weight:700}
+.ed-total .num{font-size:16px;font-weight:500}
+@media (max-width:520px){ .ed-fila.con-tipo{grid-template-columns:auto minmax(0,1fr) 96px auto} .ed-fila.con-tipo select{grid-column:2/4} }
+
+/* Gráfico */
+.graf{width:100%;height:auto;display:block}
+.graf text{fill:var(--fg-3);font-family:var(--f-mono);font-size:11px}
+.graf .grid{stroke:var(--line);stroke-width:1}
+.graf .bar{fill:var(--accent);transform-box:fill-box;transform-origin:bottom;animation:barra .6s var(--ease) both}
+.graf .hit{fill:transparent}
+.graf g.col:hover .bar{fill:var(--fg)}
+.graf .val{fill:var(--fg-2)}
+.tip{position:fixed;pointer-events:none;background:var(--fg);color:var(--bg);font-family:var(--f-mono);font-size:12px;padding:6px 9px;border-radius:6px;z-index:60;white-space:nowrap}
+.meses{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin-top:14px}
+@media (max-width:600px){ .meses{grid-template-columns:repeat(3,minmax(0,1fr))} }
+.meses label{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--fg-3)}
+.meses .inp{padding:6px 8px;font-size:12.5px}
+
+/* Calendario */
+.cal-nav{display:flex;align-items:center;gap:8px}
+.cal-nav h2{font-size:17px;min-width:150px;text-align:center;text-transform:capitalize}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border-top:1px solid var(--line);border-left:1px solid var(--line)}
+.cal .dow{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--fg-3);padding:6px 8px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--surface-2)}
+.dia{min-height:96px;padding:6px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--surface);cursor:pointer;display:flex;flex-direction:column;gap:3px;min-width:0;text-align:left;border-top:0;border-left:0;font:inherit;color:inherit;transition:background .15s}
+.dia:hover{background:var(--surface-2)}
+.dia.fuera{background:var(--bg);color:var(--fg-3)}
+.dia .d{font-family:var(--f-mono);font-size:12px;font-weight:500}
+.dia.hoy .d{background:var(--fg);color:var(--bg);border-radius:4px;padding:0 5px;align-self:flex-start}
+.dia.sel{box-shadow:inset 0 0 0 2px var(--accent)}
+.ev{font-size:11px;line-height:1.3;padding:2px 5px;border-radius:4px;background:var(--accent-soft);color:var(--fg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ev.tk{background:transparent;border:1px solid var(--line-strong);color:var(--fg-2)}
+.ev.mas{background:transparent;color:var(--fg-3);padding-left:2px}
+@media (max-width:700px){ .dia{min-height:54px;padding:4px} .ev{font-size:0;height:5px;padding:0;border-radius:3px} .ev.mas{display:none} }
+.cron{display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,350px);gap:22px;align-items:start}
+@media (max-width:1100px){ .cron{grid-template-columns:minmax(0,1fr)} }
+.agenda{list-style:none;margin:0;padding:0;display:grid}
+.agenda li{display:grid;grid-template-columns:58px minmax(0,1fr) auto;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);align-items:start}
+.agenda li:last-child{border-bottom:0}
+.agenda .f{font-family:var(--f-mono);font-size:12px;color:var(--fg-2);line-height:1.3}
+.agenda .f b{display:block;font-size:17px;color:var(--fg);font-weight:500}
+.agenda .tt{font-weight:600;font-size:13.5px;overflow-wrap:anywhere}
+.agenda .mt{font-size:12px;color:var(--fg-3);margin-top:3px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.agenda li.pasado .tt{color:var(--fg-3)}
+
+/* IA */
+.ia-wrap{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:22px;align-items:start}
+@media (max-width:1020px){ .ia-wrap{grid-template-columns:minmax(0,1fr)} }
+.ia-caja textarea{min-height:170px;font-size:14px}
+.ejemplos{display:flex;gap:6px;flex-wrap:wrap}
+.ejemplos button{border:1px dashed var(--line-strong);background:transparent;border-radius:999px;padding:4px 10px;font-size:12px;color:var(--fg-2);cursor:pointer;transition:background .15s,color .15s}
+.ejemplos button:hover{background:var(--surface-2);color:var(--fg)}
+.adjuntos{display:flex;gap:8px;flex-wrap:wrap}
+.adjuntos figure{margin:0;position:relative;width:70px;height:70px;border-radius:8px;overflow:hidden;border:1px solid var(--line);animation:rise .3s var(--ease) both}
+.adjuntos img{width:100%;height:100%;object-fit:cover;display:block}
+.adjuntos button{position:absolute;top:3px;right:3px;width:20px;height:20px;border-radius:50%;border:0;background:var(--tinta);color:var(--papel);font-size:11px;cursor:pointer;line-height:1}
+.pensando{display:flex;align-items:center;gap:10px;color:var(--fg-2);font-weight:600;font-size:13px}
+.pensando::after{content:'';animation:dots 1.2s steps(4) infinite;display:inline-block;width:1.4em}
+.pensando .orbe{width:14px;height:14px;border-radius:50%;background:var(--accent);animation:pulse 1s infinite}
+.res-grupo{display:grid;gap:6px;margin-bottom:14px}
+.res-grupo h3{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:800}
+.res-item{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:start;padding:9px 10px;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--surface);animation:rise .35s var(--ease) both;cursor:pointer}
+.res-item input{margin-top:3px}
+.res-item .tt{font-weight:600;font-size:13.5px}
+.res-item .mt{font-size:12px;color:var(--fg-3);display:flex;gap:6px;flex-wrap:wrap;margin-top:3px}
+.res-item.off{opacity:.5}
+.chat{display:grid;gap:10px;max-height:420px;overflow-y:auto;padding:4px}
+.burbuja{max-width:88%;padding:10px 12px;border-radius:12px;font-size:13.5px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere;animation:rise .3s var(--ease) both}
+.burbuja.yo{justify-self:end;background:var(--fg);color:var(--bg);border-bottom-right-radius:4px}
+.burbuja.ia{justify-self:start;background:var(--surface-2);border-bottom-left-radius:4px}
+.wa-panel{display:grid;gap:10px;font-size:13px;color:var(--fg-2)}
+.wa-panel ol{margin:0;padding-left:18px;display:grid;gap:6px}
+
+/* Presupuestos */
+.pres{display:grid;grid-template-columns:minmax(300px,380px) minmax(0,1fr);gap:22px;align-items:start}
+@media (max-width:1100px){ .pres{grid-template-columns:minmax(0,1fr)} }
+.pres-ed{display:grid;gap:16px}
+.pres-ed .sec{display:grid;gap:10px;padding-bottom:16px;border-bottom:1px solid var(--line)}
+.pres-ed .sec:last-child{border-bottom:0;padding-bottom:0}
+.pres-ed h3{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:800}
+.dos{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.item-ed{display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:6px;padding:10px;background:var(--surface-2);border-radius:var(--r-sm);animation:rise .3s var(--ease) both}
+.item-ed .inp{padding:7px 9px;font-size:13px;background:var(--surface)}
+.item-ed .pr{grid-column:1/3}
+.item-ed .lt{grid-column:1/-1;text-align:right;font-size:12px;color:var(--fg-2);font-family:var(--f-mono)}
+.hoja-wrap{overflow-x:auto;padding-bottom:6px}
+/* La hoja es papel impreso: colores fijos de la marca en ambos temas */
+.hoja{width:min(210mm,100%);min-height:min(297mm,140vh);margin:0 auto;background:#FFFFFF;color:#262626;box-shadow:var(--shadow);padding:16mm 15mm;font-family:var(--f-body);display:flex;flex-direction:column}
+.h-cab{display:flex;justify-content:space-between;gap:20px;padding-bottom:16px;border-bottom:3px solid #262626;margin-bottom:22px}
+.h-n{font-family:var(--f-display);font-size:24px;font-weight:800;letter-spacing:-.015em;margin:0}
+.h-l{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:#6B5E52;margin-top:4px}
+.h-datos{font-size:12px;color:#574E46;line-height:1.7;margin-top:10px}
+.h-badge{display:inline-block;background:#262626;color:#F7E7D7;padding:7px 16px;border-radius:4px;font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px}
+.h-meta{font-size:12.5px;color:#574E46;line-height:1.7;text-align:right}
+.h-meta strong{color:#262626;font-family:var(--f-mono);font-weight:500}
+.h-cli{background:#F7E7D7;border-radius:4px;padding:14px 16px;margin-bottom:22px}
+.h-cli small{font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#8E5F3A}
+.h-cli .cn{font-size:16px;font-weight:700;margin-top:3px}
+.h-cli .cs{font-size:13px;color:#574E46}
+table.h-t{width:100%;border-collapse:collapse;margin-bottom:18px}
+table.h-t th{background:#262626;color:#F7E7D7;text-align:left;padding:9px 11px;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;font-weight:700}
+table.h-t td{padding:10px 11px;font-size:13px;border-bottom:1px solid #EADBCB;color:#262626}
+table.h-t tbody tr:nth-child(even){background:#FBF5EF}
+table.h-t .c{text-align:center;width:56px}
+table.h-t .r{text-align:right;white-space:nowrap;font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.h-tot{display:flex;justify-content:flex-end;margin-bottom:24px}
+.h-tot table{border-collapse:collapse;width:290px}
+.h-tot td{padding:8px 12px;font-size:13.5px}
+.h-tot td:last-child{text-align:right;font-family:var(--f-mono)}
+.h-tot .sub td{color:#574E46;border-bottom:1px solid #EADBCB}
+.h-tot .tot td{background:#262626;color:#F7E7D7;font-weight:800;font-size:16px}
+.h-notas{border:1px solid #EADBCB;border-radius:4px;padding:14px 16px;margin-bottom:20px}
+.h-notas small{font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#8E5F3A}
+.h-notas p{margin:6px 0 0;font-size:12.5px;line-height:1.6;white-space:pre-line;color:#3A342F}
+.h-pie{margin-top:auto;text-align:center;font-size:11px;color:#857869;padding-top:14px;border-top:1px solid #EADBCB}
+.ph{color:#A09284;font-style:italic}
+.estado-sel{padding:4px 6px;font-size:12px}
+@media (max-width:700px){ .hoja{padding:7mm 5mm} .h-cab{flex-direction:column} .h-meta{text-align:left} .h-tot table{width:100%} }
+
+/* Modal y toasts */
+.modal{position:fixed;inset:0;background:rgba(20,20,20,.5);display:grid;place-items:center;z-index:50;padding:16px;animation:fade .2s ease both}
+.modal-c{background:var(--bg);border:1px solid var(--line-strong);border-radius:var(--r);width:100%;max-width:640px;max-height:90vh;overflow:auto;padding:22px;display:grid;gap:18px;box-shadow:var(--shadow-up);animation:rise .3s var(--ease) both}
+.modal-c h2{font-size:18px}
+.modal-c h3{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--fg-3);font-weight:800;margin-bottom:10px}
+.modal-c section{display:grid;gap:10px;padding-bottom:16px;border-bottom:1px solid var(--line)}
+.modal-c section:last-of-type{border-bottom:0}
+.modal-c p{margin:0;font-size:12.5px;color:var(--fg-2)}
+.fila-acc{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.msg{font-size:12.5px;font-weight:600}
+.msg.ok{color:var(--good)} .msg.err{color:var(--bad)}
+.respaldos{display:grid;gap:6px}
+.respaldos div{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--line);border-radius:var(--r-sm);font-size:12.5px}
+#toasts{position:fixed;right:max(16px, env(safe-area-inset-right, 0px));bottom:calc(16px + env(safe-area-inset-bottom, 0px));z-index:70;display:grid;gap:8px;justify-items:end;pointer-events:none}
+.toast{background:var(--fg);color:var(--bg);padding:10px 14px;border-radius:10px;font-size:13px;font-weight:600;box-shadow:var(--shadow-up);animation:toastIn .3s var(--ease) both;max-width:min(360px,calc(100vw - 32px));transition:opacity .3s,transform .3s}
+.toast.out{opacity:0;transform:translateY(8px)}
+
+/* Tablet: riel de íconos */
+@media (max-width:1080px) and (min-width:701px){
+  #app{grid-template-columns:76px minmax(0,1fr)}
+  .side{padding:18px 8px;align-items:center}
+  .marca .l,.nav a span:not(.cnt),.side-pie .txt{display:none}
+  .marca .n{font-size:17px}
+  .side .marca .w1,.side .marca .n i{display:none}
+  .nav a{flex-direction:column;gap:3px;padding:9px 6px;font-size:10px;width:60px}
+  .nav a .cnt{position:absolute;top:4px;right:6px;margin:0;font-size:9.5px}
+  .nav a::after{content:attr(data-corto);font-size:10px}
+  .side-pie{justify-items:center}
+  .side-pie button{padding:6px;font-size:11px;text-align:center}
+}
+/* Celular: barra superior + pestañas abajo */
+.topbar,.tabbar{display:none}
+@media (max-width:700px){
+  #app{grid-template-columns:minmax(0,1fr)}
+  .side{display:none}
+  .topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--side-bg);color:var(--side-fg);position:sticky;top:env(safe-area-inset-top,0px);z-index:20;padding-block:11px;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
+  body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--side-bg)}
+  .topbar .marca .n{font-size:17px}
+  .topbar .marca .n i{height:16px}
+  .topbar button.aj{background:transparent;border:1px solid var(--side-line);color:var(--side-fg-2);border-radius:var(--r-sm);padding:6px 9px;font-size:12px;font-weight:600}
+  .tabbar{display:grid;grid-template-columns:repeat(5,1fr);align-items:end;position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--side-bg);border-top:1px solid var(--side-line);padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
+  .tabbar a{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 2px 9px;color:var(--side-fg-2);text-decoration:none;font-size:10px;font-weight:600;transition:color .2s}
+  .tabbar a svg{width:30px;height:22px;padding:2px 6px;border-radius:6px;transition:background .2s,color .2s}
+  .tabbar a[aria-current="page"]{color:var(--papel)}
+  .tabbar a[aria-current="page"] svg{background:var(--papel);color:var(--tinta)}
+  .tabbar a.ia-tab svg{width:50px;height:50px;padding:12px;border-radius:50%;background:var(--accent);color:var(--accent-ink);margin-top:-22px;box-shadow:0 6px 18px rgba(0,0,0,.35);border:3px solid var(--side-bg)}
+  .tabbar a.ia-tab[aria-current="page"] svg{background:var(--papel);color:var(--tinta)}
+  main{padding-bottom:110px;padding-top:18px}
+  .cab h1{font-size:23px}
+  #toasts{bottom:calc(84px + env(safe-area-inset-bottom, 0px))}
+}
+
+/* ---------- Acceso por email (solo con Supabase) ---------- */
+#acceso{position:fixed;inset:0;z-index:90;display:grid;place-items:center;overflow:auto;padding-block:24px;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));background-color:var(--bg);background-image:linear-gradient(var(--line) 1px, transparent 1px),linear-gradient(90deg, var(--line) 1px, transparent 1px);background-size:24px 24px}
+.rotulo{width:100%;max-width:420px;background:var(--surface);border:2px solid var(--fg);box-shadow:var(--shadow-up);animation:rise .4s var(--ease) both}
+.rotulo-marca{background:var(--fg);color:var(--bg);padding:22px}
+.rotulo-marca .m1{font-family:var(--f-display);font-weight:900;font-size:26px;letter-spacing:-.01em}
+.rotulo-marca .m1 span{font-weight:400;opacity:.55;margin:0 6px}
+.rotulo-marca .m2{font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;margin-top:6px;opacity:.85}
+.rotulo form{padding:22px;display:grid;gap:12px}
+.rotulo h1{font-size:20px}
+.rotulo .ayuda{font-size:12.5px;color:var(--fg-2);margin:0}
+.rotulo .msg{margin:0;min-height:1em}
+</style>
+</head>
+<body>
+<div id="splash" aria-hidden="true"><div><div class="lg"><span>Design</span><i></i><span>BNZ</span></div><small>Diseño · Visualización · Tecnología</small></div></div>
+<div id="app"></div>
+<div id="modal-root"></div>
+<div id="toasts" aria-live="polite"></div>
+<div class="tip" id="tip" hidden></div>
+
+<script src="config.js"></script>
+<script src="puente.js"></script>
+<script>
+(function(){
+'use strict';
+
+/* ---------------- Utilidades ---------------- */
+const $ = (s, r=document) => r.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid = () => Math.random().toString(36).slice(2, 9) + Date.now().toString(36).slice(-4);
+const pad = n => String(n).padStart(2, '0');
+const isoDe = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const hoyISO = () => isoDe(new Date());
+const deISO = s => { const [y,m,d] = s.split('-').map(Number); return new Date(y, m-1, d); };
+const sumarDias = (iso, n) => { const d = deISO(iso); d.setDate(d.getDate()+n); return isoDe(d); };
+const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const MES_C = ['E','F','M','A','M','J','J','A','S','O','N','D'];
+const DOW = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+const ars0 = new Intl.NumberFormat('es-AR', {style:'currency', currency:'ARS', maximumFractionDigits:0});
+const ars2 = new Intl.NumberFormat('es-AR', {style:'currency', currency:'ARS', minimumFractionDigits:2});
+const plata = n => ars0.format(Math.round(Number(n)||0));
+const fCorta = iso => { if(!iso) return ''; const d = deISO(iso); return `${pad(d.getDate())}/${pad(d.getMonth()+1)}`; };
+const fLarga = iso => { if(!iso) return '—'; const [y,m,d] = iso.split('-'); return `${d}/${m}/${y}`; };
+const fDia = iso => new Intl.DateTimeFormat('es-AR', {weekday:'long', day:'numeric', month:'long'}).format(deISO(iso));
+const cap = s => s ? s.charAt(0).toUpperCase() + s.slice(1) : '';
+const numero = v => { const n = parseFloat(String(v).replace(/\./g, '').replace(',', '.')); return isFinite(n) ? n : 0; };
+const numeroSimple = v => { const n = parseFloat(String(v).replace(',', '.')); return isFinite(n) ? n : 0; };
+const lsGet = k => { try { return localStorage.getItem(k); } catch(e){ return null; } };
+const lsSet = (k,v) => { try { localStorage.setItem(k, v); return true; } catch(e){ return false; } };
+const isoValido = s => typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s);
+const clon = o => JSON.parse(JSON.stringify(o));
+function cargarScript(src){ return new Promise((ok, mal) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = () => mal(new Error('No se pudo cargar ' + src)); document.head.appendChild(s); }); }
+
+const ICON = {
+  inicio:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg>',
+  tareas:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3.5" width="16" height="17" rx="2"/><path d="m8 9 1.5 1.5L12 8"/><path d="M14 9.5h3"/><path d="m8 15 1.5 1.5L12 14"/><path d="M14 15.5h3"/></svg>',
+  economia:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></svg>',
+  cronograma:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M3 9.5h18"/><path d="M8 2.5v4"/><path d="M16 2.5v4"/><path d="M7.5 13.5h3v3h-3z"/></svg>',
+  presupuestos:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2.5h9l4 4V21.5H6z"/><path d="M15 2.5v4h4"/><path d="M9 11h7"/><path d="M9 14.5h7"/><path d="M9 18h4"/></svg>',
+  ia:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg>',
+  check:'<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m3.5 8.5 3 3 6-7"/></svg>',
+  flecha:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>',
+  wa:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l1.3-3.9A8 8 0 1 1 8 19z"/><path d="M9 9.5c0 3 2.5 5.5 5.5 5.5l1-1.6-2-1-1 .9c-.9-.4-1.9-1.4-2.3-2.3l.9-1-1-2z"/></svg>',
+  cal:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M3 9.5h18"/><path d="M8 2.5v4"/><path d="M16 2.5v4"/><path d="M12 13v4"/><path d="M10 15h4"/></svg>',
+  img:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/></svg>'
+};
+const VISTAS = [
+  {id:'inicio', nombre:'Inicio', corto:'Inicio'},
+  {id:'ia', nombre:'Asistente IA', corto:'IA'},
+  {id:'tareas', nombre:'Tareas', corto:'Tareas'},
+  {id:'cronograma', nombre:'Cronograma', corto:'Agenda'},
+  {id:'economia', nombre:'Economía', corto:'Plata'},
+  {id:'presupuestos', nombre:'Presupuestos', corto:'Presup.'}
+];
+
+/* ---------------- Estructura de datos ---------------- */
+const AREAS_DEF = [
+  {id:'muni', nombre:'Municipalidad', det:'Dir. de Proyecto y Arquitectura Urbana'},
+  {id:'prof', nombre:'Profesorado', det:'Prof. en Educación Secundaria en Informática'},
+  {id:'acuna', nombre:'Arq. Julieta Acuña', det:'Particular'},
+  {id:'yanuzzi', nombre:'Arq. Martín Yanuzzi', det:'Particular'},
+  {id:'monica', nombre:'Arq. Mónica', det:'Particular'},
+  {id:'segovia', nombre:'M.M.O. Malvina Segovia', det:'Particular'},
+  {id:'info', nombre:'Informática', det:'Mantenimientos particulares'},
+  {id:'otros', nombre:'Personal y cursos', det:''}
+];
+const CATS = ['Trabajo','Beca','Comida','Transporte','Servicios','Insumos','Deporte','Compras','Salud','Deudas','Otros'];
+const DOCS = ['perfil','tareas','eventos','eco','pres','ia'];
+function presNuevo(n){
+  return {id:uid(), numero:String(n).padStart(4,'0'), fecha:hoyISO(), cliente:'', servicio:'', items:[{id:uid(), cant:1, desc:'', precio:0}], notas:'Presupuesto válido por 15 días.\nForma de pago y plazo de entrega a convenir.'};
+}
+function normalizarDoc(doc, d){
+  d = d && typeof d === 'object' ? d : {};
+  switch(doc){
+    case 'perfil': return {nombre:'', marca:'Design | BNZ', lema:'Diseño · Visualización · Tecnología', ciudad:'', telefono:'', email:'', whatsapp:'', ultimaCopiaPC:'', ultimoRespaldo:'', ...d, areas: Array.isArray(d.areas) && d.areas.length ? d.areas : AREAS_DEF};
+    case 'tareas': case 'eventos': return {items: Array.isArray(d.items) ? d.items : []};
+    case 'eco': {
+      const e = {ingresos:[], gastos:[], servicios:[], metas:[], compras:[], movimientos:[], ...d};
+      ['ingresos','gastos','servicios','metas','compras','movimientos'].forEach(k => { if(!Array.isArray(e[k])) e[k] = []; });
+      if(!e.ahorro || typeof e.ahorro !== 'object' || Array.isArray(e.ahorro)) e.ahorro = {};
+      return e;
+    }
+    case 'pres': { const p = {seq:1, historial:[], ...d}; if(!p.borrador) p.borrador = presNuevo(p.seq); if(!Array.isArray(p.historial)) p.historial = []; return p; }
+    case 'ia': return {historial: Array.isArray(d.historial) ? d.historial : [], chat: Array.isArray(d.chat) ? d.chat : []};
+  }
+  return d;
+}
+let S = {}; DOCS.forEach(k => S[k] = normalizarDoc(k, null));
+const TAREAS = () => S.tareas.items, EVENTOS = () => S.eventos.items;
+
+/* ---------------- Sincronización con la nube ---------------- */
+const SY = { db:null, base:null, modo:'cargando', listo:{}, confirmado:{}, existe:{}, dirty:{}, escribiendo:{}, otraVez:{}, timers:{}, ultimo:{}, error:null, ultimaSync:0, sample:null, downloads:null };
+function estadoSync(){
+  let s = 'ok', txt = 'Sincronizado';
+  if(SY.modo === 'cargando'){ s = 'guardando'; txt = 'Conectando…'; }
+  else if(SY.modo === 'local'){ s = 'local'; txt = 'Solo en este navegador'; }
+  else if(SY.error){ s = 'error'; txt = 'Sin conexión · reintenta al editar'; }
+  else if(DOCS.some(d => SY.dirty[d] || SY.escribiendo[d])){ s = 'guardando'; txt = 'Guardando en la nube…'; }
+  else if(SY.ultimaSync){ txt = 'Guardado en la nube ' + new Date(SY.ultimaSync).toLocaleTimeString('es-AR', {hour:'2-digit', minute:'2-digit', hourCycle:'h23'}); }
+  document.querySelectorAll('.sync').forEach(el => { el.dataset.s = s; const t = el.querySelector('.txt'); if(t) t.textContent = txt; el.title = txt; });
+}
+function marcar(doc){
+  SY.dirty[doc] = true; estadoSync();
+  clearTimeout(SY.timers[doc]);
+  SY.timers[doc] = setTimeout(() => escribir(doc), 650);
+}
+async function escribir(doc){
+  if(SY.escribiendo[doc]){ SY.otraVez[doc] = true; return; }
+  SY.escribiendo[doc] = true; SY.dirty[doc] = false; estadoSync();
+  const cuerpo = clon(S[doc]);
+  const txt = JSON.stringify(cuerpo);
+  let ok = false;
+  for(let intento = 0; intento < 2 && !ok; intento++){
+    try {
+      if(SY.db) await SY.db.doc(`${SY.base}/${doc}`).set(cuerpo);
+      else if(!lsSet('bnz.local.' + doc, txt)) throw {code:'local', message:'El navegador no permite guardar'};
+      ok = true; SY.ultimo[doc] = txt; SY.existe[doc] = true; SY.error = null; SY.ultimaSync = Date.now();
+    } catch(e){
+      SY.error = e;
+      if(e && e.code === 'unavailable' && intento === 0){ await new Promise(r => setTimeout(r, 900 + Math.random()*900)); continue; }
+      if(e && e.code === 'quota_exceeded') toast('La nube está llena: borrá movimientos o copias viejas.', 'err');
+      else if(e && e.code === 'invalid_argument') toast('No se pudo guardar: los datos son demasiado grandes.', 'err');
+      SY.dirty[doc] = true;
+      break;
+    }
+  }
+  SY.escribiendo[doc] = false;
+  if(ok && (SY.otraVez[doc] || SY.dirty[doc])){ SY.otraVez[doc] = false; setTimeout(() => escribir(doc), 300); }
+  estadoSync();
+}
+function aplicarRemoto(doc, data){
+  const txt = JSON.stringify(data ?? null);
+  if(txt === SY.ultimo[doc]) return false;
+  SY.ultimo[doc] = txt;
+  S[doc] = normalizarDoc(doc, data ? JSON.parse(txt) : null);
+  return true;
+}
+let renderPend = false;
+function programarRender(){ if(renderPend) return; renderPend = true; requestAnimationFrame(() => { renderPend = false; render(false); }); }
+
+async function conectar(){
+  const C = window.claude;
+  let db = null, user = null;
+  try { if(C && C.use){ [db, user] = await Promise.all([C.use('db'), C.use('user')]); } } catch(e){}
+  let id = null;
+  try { id = user ? await user.id() : null; } catch(e){}
+  if(C && C.use){ C.use('sample').then(s => { SY.sample = s; if(S && UI.vista === 'ia') render(false); }).catch(() => {}); C.use('downloads').then(d => { SY.downloads = d; }).catch(() => {}); }
+  if(db && id){
+    SY.db = db; SY.base = 'data/users/' + id; SY.modo = 'nube';
+    const t0 = setTimeout(() => { if(DOCS.some(d => !SY.confirmado[d])){ UI.avisoConexion = true; programarRender(); } }, 10000);
+    DOCS.forEach(doc => {
+      db.doc(`${SY.base}/${doc}`).onSnapshot(snap => {
+        SY.listo[doc] = true;
+        if(!snap.metadata.fromCache){ SY.confirmado[doc] = true; if(DOCS.every(d => SY.confirmado[d])){ clearTimeout(t0); if(UI.avisoConexion){ UI.avisoConexion = false; programarRender(); } respaldoDiario(); } }
+        SY.existe[doc] = snap.exists;
+        let cambio = false;
+        if(!(snap.metadata.hasPendingWrites || SY.dirty[doc] || SY.escribiendo[doc])) cambio = aplicarRemoto(doc, snap.exists ? snap.data() : null);
+        if(UI.cargando){ if(DOCS.every(d => SY.listo[d])){ UI.cargando = false; ocultarSplash(); pintarShell(); render(true); } return; }
+        if(cambio) programarRender();
+      }, err => { SY.error = err; estadoSync(); if(UI.cargando){ UI.cargando = false; ocultarSplash(); programarRender(); } });
+    });
+  } else {
+    SY.modo = 'local';
+    DOCS.forEach(doc => { try { const raw = lsGet('bnz.local.' + doc); if(raw){ S[doc] = normalizarDoc(doc, JSON.parse(raw)); SY.ultimo[doc] = raw; SY.existe[doc] = true; } } catch(e){} });
+    UI.cargando = false; ocultarSplash(); render(true);
+  }
+  estadoSync();
+}
+
+/* Copia diaria en la nube (una por día, se guardan las últimas 14) */
+async function respaldoDiario(){
+  if(!SY.db || UI.respaldoHecho) return;
+  UI.respaldoHecho = true;
+  const hoy = hoyISO();
+  if(!['tareas','eventos','eco','pres'].some(d => SY.existe[d])) return;
+  if(S.perfil.ultimoRespaldo === hoy) return;
+  try {
+    const datos = {perfil:S.perfil, tareas:S.tareas, eventos:S.eventos, eco:S.eco, pres:S.pres};
+    if(JSON.stringify(datos).length > 240000) return;
+    const col = SY.db.doc(`${SY.base}/perfil`).collection('respaldos');
+    await col.doc(hoy).set({fecha:hoy, creado:new Date().toISOString(), datos:clon(datos)});
+    S.perfil.ultimoRespaldo = hoy; marcar('perfil');
+    const lista = await col.get();
+    const ids = lista.docs.map(d => d.id).sort();
+    for(const viejo of ids.slice(0, Math.max(0, ids.length - 14))) await col.doc(viejo).delete();
+  } catch(e){ console.warn('respaldo', e); }
+}
+
+/* ---------------- Estado de interfaz ---------------- */
+const UI = {
+  vista: 'inicio', cargando: true, animar: true, avisoConexion: false, respaldoHecho: false,
+  tPlazo: 'todas', tArea: '', tHechas: false, tEditar: null,
+  mesMov: hoyISO().slice(0,7), anioAhorro: String(new Date().getFullYear()),
+  calMes: hoyISO().slice(0,7), calSel: hoyISO(), evEditar: null,
+  iaModo: 'ordenar', iaTexto: '', iaImgs: [], iaPensando: false, iaRes: null, iaSel: {}, iaError: '', iaStream: '', chatTexto: '', chatPensando: false
+};
+let splashFuera = false;
+function ocultarSplash(){ if(splashFuera) return; splashFuera = true; const s = $('#splash'); if(s){ s.classList.add('fuera'); setTimeout(() => s.remove(), 400); } }
+setTimeout(ocultarSplash, 1500);
+
+/* ---------------- Cálculos ---------------- */
+const suma = (arr, k='monto') => arr.reduce((a, x) => a + (Number(x[k])||0), 0);
+const area = id => (S.perfil.areas.find(a => a.id === id) || {nombre:'Sin área'});
+const tareaHecha = t => t.diaria ? t.hechaEn === hoyISO() : !!t.hecha;
+const tareaVencida = t => !tareaHecha(t) && t.fecha && t.fecha < hoyISO();
+const PRIO = {alta:0, media:1, baja:2};
+function ordenarTareas(a, b){
+  const ha = tareaHecha(a), hb = tareaHecha(b);
+  if(ha !== hb) return ha ? 1 : -1;
+  if((PRIO[a.prioridad]??1) !== (PRIO[b.prioridad]??1)) return (PRIO[a.prioridad]??1) - (PRIO[b.prioridad]??1);
+  if(a.fecha && b.fecha) return a.fecha.localeCompare(b.fecha);
+  return a.fecha ? -1 : b.fecha ? 1 : 0;
+}
+function resumenEco(){
+  const e = S.eco;
+  const ing = suma(e.ingresos), gas = suma(e.gastos), ser = suma(e.servicios);
+  const egresos = gas + ser, balance = ing - egresos, pct = ing ? balance / ing : 0;
+  const anio = String(new Date().getFullYear());
+  const ahorro = (e.ahorro[anio] || []).reduce((a, n) => a + (Number(n)||0), 0);
+  return {ing, gas, ser, egresos, balance, pct, ahorro, anio};
+}
+function movMes(ym){
+  const l = S.eco.movimientos.filter(m => (m.fecha||'').startsWith(ym)).sort((a,b) => b.fecha.localeCompare(a.fecha));
+  const ing = suma(l.filter(m => m.tipo === 'ingreso')), gas = suma(l.filter(m => m.tipo === 'gasto'));
+  return {l, ing, gas, neto: ing - gas};
+}
+function agendaEntre(desde, hasta){
+  const out = [];
+  EVENTOS().forEach(ev => {
+    if(!isoValido(ev.fecha)) return;
+    if(ev.repite === 'semanal'){
+      let f = ev.fecha;
+      if(f < desde){ const dif = Math.round((deISO(desde) - deISO(f)) / 864e5); f = sumarDias(f, Math.ceil(dif/7)*7); }
+      for(; f <= hasta; f = sumarDias(f, 7)) out.push({tipo:'ev', fecha:f, ev});
+    } else if(ev.fecha >= desde && ev.fecha <= hasta) out.push({tipo:'ev', fecha:ev.fecha, ev});
+  });
+  TAREAS().forEach(t => { if(isoValido(t.fecha) && !tareaHecha(t) && t.fecha >= desde && t.fecha <= hasta) out.push({tipo:'tarea', fecha:t.fecha, t}); });
+  return out.sort((a,b) => (a.fecha + (a.ev?.hora||'99')).localeCompare(b.fecha + (b.ev?.hora||'99')));
+}
+
+/* ---------------- Recordatorios: calendario y WhatsApp ---------------- */
+function linkCalendario(titulo, fecha, hora, nota){
+  const f = fecha.replace(/-/g, '');
+  let dates;
+  if(hora && /^\d{2}:\d{2}$/.test(hora)){
+    const [h, m] = hora.split(':').map(Number);
+    const fin = new Date(+fecha.slice(0,4), +fecha.slice(5,7)-1, +fecha.slice(8,10), h + 1, m);
+    dates = `${f}T${pad(h)}${pad(m)}00/${isoDe(fin).replace(/-/g,'')}T${pad(fin.getHours())}${pad(fin.getMinutes())}00`;
+  } else dates = `${f}/${sumarDias(fecha, 1).replace(/-/g, '')}`;
+  return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(titulo)}&dates=${dates}&ctz=America/Argentina/Buenos_Aires&details=${encodeURIComponent((nota ? nota + '\n\n' : '') + 'Recordatorio de Design | BNZ')}`;
+}
+function linkWA(msg){ const n = String(S.perfil.whatsapp || '').replace(/\D/g, ''); return `https://wa.me/${n}?text=${encodeURIComponent(msg)}`; }
+function msgRecordatorio(titulo, fecha, hora, nota){ return `⏰ Recordatorio: ${titulo}\n📅 ${cap(fDia(fecha))}${hora ? ' · ' + hora + ' h' : ''}${nota ? '\n📝 ' + nota : ''}`; }
+function linksRecordar(titulo, fecha, hora, nota){
+  if(!isoValido(fecha)) return '';
+  return `<a class="mini-link" href="${esc(linkCalendario(titulo, fecha, hora, nota))}" target="_blank" rel="noopener" title="Crear recordatorio en Google Calendar">+ Calendario</a>
+    <a class="mini-link wa" href="${esc(linkWA(msgRecordatorio(titulo, fecha, hora, nota)))}" target="_blank" rel="noopener" title="Mandarlo por WhatsApp">WhatsApp</a>`;
+}
+function msgResumenDia(){
+  const hoy = hoyISO();
+  const ag = agendaEntre(hoy, sumarDias(hoy, 1));
+  const foco = TAREAS().filter(t => !tareaHecha(t) && (t.plazo === 'hoy' || t.diaria || t.fecha === hoy || tareaVencida(t) || t.prioridad === 'alta')).sort(ordenarTareas).slice(0, 8);
+  let m = `📋 *Design | BNZ · ${cap(fDia(hoy))}*\n`;
+  if(ag.length){ m += `\n*Agenda*\n` + ag.map(x => `• ${x.fecha === hoy ? 'Hoy' : 'Mañana'}${x.ev?.hora ? ' ' + x.ev.hora : ''}: ${x.ev ? x.ev.titulo : x.t.titulo}`).join('\n') + '\n'; }
+  if(foco.length){ m += `\n*Tareas en foco*\n` + foco.map(t => `• ${t.titulo}${tareaVencida(t) ? ' (vencida)' : ''}`).join('\n') + '\n'; }
+  if(!ag.length && !foco.length) m += '\nNada urgente por hoy. 🙌';
+  return m;
+}
+
+/* ---------------- Render ---------------- */
+function pintarShell(){
+  const p = S.perfil;
+  const nav = lateral => VISTAS.map(v => {
+    if(!lateral && v.id === 'presupuestos') return '';
+    return `<a href="#${v.id}" data-nav="${v.id}" data-corto="${v.corto}" class="${v.id === 'ia' ? 'ia-tab' : ''}" ${UI.vista === v.id ? 'aria-current="page"' : ''} title="${v.nombre}">${ICON[v.id]}<span>${lateral ? v.nombre : v.corto}</span>${lateral && v.id === 'tareas' ? '<span class="cnt" data-live="cnt-tareas"></span>' : ''}</a>`;
+  }).join('');
+  const tabs = ['inicio','tareas','ia','cronograma','economia'].map(id => VISTAS.find(v => v.id === id)).map(v => `<a href="#${v.id}" data-nav="${v.id}" class="${v.id === 'ia' ? 'ia-tab' : ''}" ${UI.vista === v.id ? 'aria-current="page"' : ''}>${ICON[v.id]}<span>${v.corto}</span></a>`).join('');
+  $('#app').innerHTML = `
+    <aside class="side">
+      <button class="marca" data-nav-btn="inicio" aria-label="Ir al inicio"><div class="n"><span class="w1">Design</span><i></i>BNZ</div><div class="l">${esc(p.lema)}</div></button>
+      <nav class="nav" aria-label="Secciones">${nav(true)}</nav>
+      <div class="side-pie">
+        <span class="sync" data-s="guardando"><i></i><span class="txt">Conectando…</span></span>
+        <button data-act="ajustes"><span>⚙</span> <span class="txt">Ajustes y copias</span></button>
+      </div>
+    </aside>
+    <header class="topbar">
+      <button class="marca" data-nav-btn="inicio" aria-label="Ir al inicio"><div class="n">Design<i></i>BNZ</div><span class="sync" data-s="guardando" style="margin-top:3px;color:var(--side-fg-2)"><i></i><span class="txt">Conectando…</span></span></button>
+      <button class="aj" data-act="ajustes">Ajustes</button>
+    </header>
+    <main id="main"></main>
+    <nav class="tabbar" aria-label="Secciones">${tabs}</nav>`;
+  estadoSync();
+}
+function marcarNav(){ document.querySelectorAll('[data-nav]').forEach(a => { if(a.dataset.nav === UI.vista) a.setAttribute('aria-current','page'); else a.removeAttribute('aria-current'); }); }
+
+function render(animar){
+  const main = $('#main'); if(!main) return;
+  const act = document.activeElement, fid = act && act.id && main.contains(act) ? act.id : null;
+  let s0 = null, s1 = null; try { if(fid){ s0 = act.selectionStart; s1 = act.selectionEnd; } } catch(e){}
+  const scrollChat = $('#chat') ? $('#chat').scrollTop : null;
+  main.innerHTML = `<div class="wrap ${animar ? 'entrar' : ''}">${UI.cargando ? vistaCargando() : VISTA_HTML[UI.vista]()}</div>`;
+  marcarNav(); contadores();
+  if(fid){ const el = document.getElementById(fid); if(el){ el.focus({preventScroll:true}); try { if(s0 != null) el.setSelectionRange(s0, s1); } catch(e){} } }
+  if(UI.vista === 'economia') enlazarGrafico();
+  const ch = $('#chat'); if(ch) ch.scrollTop = scrollChat != null && !animar ? ch.scrollHeight : ch.scrollHeight;
+  if(animar) animarCifras();
+}
+/* Actualiza solo las zonas [data-live] sin tocar los campos que se están escribiendo */
+function vivos(){
+  const tmp = document.createElement('div');
+  tmp.innerHTML = VISTA_HTML[UI.vista]();
+  tmp.querySelectorAll('[data-live]').forEach(n => { document.querySelectorAll(`#main [data-live="${n.dataset.live}"]`).forEach(o => { if(o.innerHTML !== n.innerHTML) o.innerHTML = n.innerHTML; }); });
+  contadores();
+  if(UI.vista === 'economia') enlazarGrafico();
+}
+function contadores(){ const pend = TAREAS().filter(t => !tareaHecha(t)).length; document.querySelectorAll('[data-live="cnt-tareas"]').forEach(el => el.textContent = pend || ''); }
+function animarCifras(){
+  document.querySelectorAll('#main [data-cuenta]').forEach(el => {
+    const fin = Number(el.dataset.cuenta), fmt = el.dataset.fmt;
+    if(!isFinite(fin) || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const t0 = performance.now(), dur = 700;
+    const paso = t => { const k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 3), v = fin * e; el.textContent = fmt === 'plata' ? plata(v) : Math.round(v); if(k < 1 && el.isConnected) requestAnimationFrame(paso); };
+    requestAnimationFrame(paso);
+  });
+}
+function ir(v){
+  if(!VISTAS.some(x => x.id === v)) v = 'inicio';
+  UI.vista = v;
+  if(location.hash.slice(1) !== v){ try { history.replaceState(null, '', '#' + v); } catch(e){} }
+  render(true); window.scrollTo({top:0, behavior:'instant'});
+}
+window.addEventListener('hashchange', () => { const h = location.hash.slice(1); if(VISTAS.some(v => v.id === h) && h !== UI.vista){ UI.vista = h; render(true); } });
+
+function toast(msg, tipo){
+  const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
+  if(tipo === 'err') t.style.background = 'var(--bad)';
+  $('#toasts').appendChild(t);
+  setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 300); }, 2600);
+}
+
+/* ---------------- Vistas ---------------- */
+const optAreas = sel => S.perfil.areas.map(a => `<option value="${a.id}" ${a.id === sel ? 'selected' : ''}>${esc(a.nombre)}</option>`).join('');
+function saludo(){ const h = new Date().getHours(); return h < 12 ? 'Buenos días' : h < 20 ? 'Buenas tardes' : 'Buenas noches'; }
+const reloj = () => new Date().toLocaleTimeString('es-AR', {hour:'2-digit', minute:'2-digit', hourCycle:'h23'});
+const sinDatos = () => !TAREAS().length && !EVENTOS().length && !S.eco.ingresos.length && !S.eco.movimientos.length;
+
+function vistaCargando(){
+  return `<div class="hero"><div><div class="fecha">${cap(fDia(hoyISO()))}</div><div class="reloj">${reloj()}</div><h1>Cargando tus datos…</h1></div><div></div></div>
+  <div class="mosaico">${'<div class="tile" style="cursor:default"><div class="skel" style="width:40px;height:40px"></div><div><div class="skel" style="width:70%"></div><div class="skel" style="width:45%;margin-top:8px"></div></div></div>'.repeat(5)}</div>`;
+}
+
+function avisos(){
+  let h = '';
+  if(UI.avisoConexion) h += `<div class="aviso">No se pudo conectar con la nube todavía. Lo que ves puede no estar actualizado; los cambios se guardan cuando vuelva la conexión.</div>`;
+  if(SY.modo === 'local') h += `<div class="aviso">Modo sin nube: los cambios se guardan solo en este navegador. Para sincronizar con el celular, completá config.js (README, paso 2).</div>`;
+  const ult = S.perfil.ultimaCopiaPC;
+  const dias = ult ? Math.floor((deISO(hoyISO()) - deISO(ult)) / 864e5) : null;
+  if(!sinDatos() && (dias === null || dias >= 7)) h += `<div class="aviso"><span>${dias === null ? 'Todavía no guardaste una copia en tu computadora.' : `Hace ${dias} días que no guardás una copia en tu computadora.`}</span><button class="btn btn-sm" data-act="exportar">Guardar copia en la PC</button></div>`;
+  if(lsGet('bnz.boveda.v1') && !S.perfil.migrado && !lsGet('bnz.migracion.ignorada')) h += `<div class="aviso"><span>Encontré datos de la versión anterior (la que tenía contraseña) en este navegador.</span><span class="acciones"><button class="btn btn-sm" data-act="migrar">Traerlos</button><button class="btn btn-sm btn-ghost" data-act="migrar-no">No, gracias</button></span></div>`;
+  return h;
+}
+
+function htmlTarea(t, compacta=false){
+  const hecha = tareaHecha(t), venc = tareaVencida(t), hoy = t.fecha === hoyISO();
+  return `<li class="tarea ${hecha ? 'hecha' : ''}" data-tid="${t.id}" ${compacta ? '' : 'draggable="true"'}>
+    <button class="check" data-act="tarea-toggle" data-id="${t.id}" aria-label="${hecha ? 'Marcar como pendiente' : 'Marcar como hecha'}">${ICON.check}</button>
+    <div style="min-width:0">
+      <div class="t-titulo">${esc(t.titulo)}</div>
+      <div class="t-meta">
+        <span class="chip">${esc(area(t.area).nombre)}</span>
+        ${t.prioridad === 'alta' && !hecha ? '<span class="pill alta">Prioridad alta</span>' : ''}
+        ${t.diaria ? '<span class="pill">Cada día</span>' : ''}
+        ${t.fecha ? `<span class="pill ${venc ? 'venc' : hoy && !hecha ? 'hoy' : ''}">${venc ? 'Vencida · ' : hoy ? 'Hoy · ' : 'Vence '}${fCorta(t.fecha)}</span>` : ''}
+        ${!compacta && t.fecha && !hecha ? linksRecordar(t.titulo, t.fecha, '', t.nota) : ''}
+      </div>
+      ${t.nota && !compacta ? `<div class="t-nota">${esc(t.nota)}</div>` : ''}
+    </div>
+    ${compacta ? '' : `<div class="t-acc">
+      <button class="btn-ghost btn" data-act="tarea-editar" data-id="${t.id}">Editar</button>
+      <button class="btn-ghost btn danger" data-act="borrar" data-col="tareas" data-id="${t.id}">Borrar</button>
+    </div>`}
+  </li>`;
+}
+function htmlAgenda(x, pasado=false, conAcc=false){
+  const d = deISO(x.fecha);
+  const tit = x.ev ? x.ev.titulo : x.t.titulo;
+  const ar = area(x.ev ? x.ev.area : x.t.area).nombre;
+  return `<li class="${pasado ? 'pasado' : ''}">
+    <div class="f"><b>${pad(d.getDate())}</b>${MESES[d.getMonth()].slice(0,3)}</div>
+    <div style="min-width:0"><div class="tt">${esc(tit)}</div>
+      <div class="mt">${x.ev && x.ev.hora ? `<span class="pill">${esc(x.ev.hora)}</span>` : ''}<span>${esc(ar)}</span>${x.tipo === 'tarea' ? '<span class="pill">Vence tarea</span>' : ''}${x.ev && x.ev.repite === 'semanal' ? '<span class="pill">Semanal</span>' : ''}${!pasado ? linksRecordar(tit, x.fecha, x.ev ? x.ev.hora : '', x.ev ? x.ev.nota : x.t.nota) : ''}</div>
+      ${x.ev && x.ev.nota ? `<div class="mt">${esc(x.ev.nota)}</div>` : ''}</div>
+    ${conAcc && x.ev ? `<div class="t-acc"><button class="btn btn-ghost btn-sm" data-act="ev-editar" data-id="${x.ev.id}">Editar</button><button class="btn btn-ghost danger btn-sm" data-act="borrar" data-col="eventos" data-id="${x.ev.id}">Borrar</button></div>` : '<span></span>'}
+  </li>`;
+}
+
+const VISTA_HTML = {
+inicio(){
+  const hoy = hoyISO();
+  const pend = TAREAS().filter(t => !tareaHecha(t));
+  const venc = pend.filter(tareaVencida);
+  const paraHoy = pend.filter(t => t.plazo === 'hoy' || t.diaria || t.fecha === hoy);
+  const foco = TAREAS().filter(t => (t.plazo === 'hoy' || t.diaria || t.fecha === hoy || tareaVencida(t) || (t.prioridad === 'alta' && !tareaHecha(t)))).sort(ordenarTareas).slice(0, 8);
+  const e = resumenEco();
+  const mm = movMes(hoy.slice(0,7));
+  const prox = agendaEntre(hoy, sumarDias(hoy, 30));
+  const sig = prox.find(x => x.tipo === 'ev') || prox[0];
+  const presAbiertos = S.pres.historial.filter(h => ['borrador','enviado','aceptado'].includes(h.estado)).length;
+  const nombre = (S.perfil.nombre || 'Benjamín').split(' ')[0];
+  return `
+  ${avisos()}
+  <section class="hero">
+    <div>
+      <div class="fecha">${cap(fDia(hoy))}</div>
+      <div class="reloj" data-reloj>${reloj()}</div>
+      <h1>${saludo()}, ${esc(nombre)}.</h1>
+      <p>${pend.length} tareas pendientes${venc.length ? `, ${venc.length} vencidas` : ''}${paraHoy.length ? `, ${paraHoy.length} para hoy` : ''}.${sig ? ` Lo próximo: ${esc(sig.ev ? sig.ev.titulo : sig.t.titulo)} (${fCorta(sig.fecha)}).` : ''}</p>
+    </div>
+    <form class="hero-ia" id="f-hero-ia">
+      <label for="hero-ia-txt">Tirá lo que tengas y la IA lo ordena</label>
+      <textarea id="hero-ia-txt" placeholder="Ej: mañana 10 hs entrego planos Morumbí, gasté 8 mil en insumos, Julieta me pagó 90 lucas…">${esc(UI.heroTexto || '')}</textarea>
+      <div class="fila"><span>Tareas, fechas, gastos y deudas: todo a su lugar.</span><button class="btn btn-sm" type="submit">${ICON.ia} Ordenar</button></div>
+    </form>
+  </section>
+
+  <div class="mosaico" role="navigation" aria-label="Menú de inicio">
+    <button class="tile ia" data-nav-btn="ia"><span class="flecha">${ICON.flecha}</span><span class="ic">${ICON.ia}</span><span><span class="t">Asistente IA</span><span class="d" style="display:block">Pegá chats, notas o capturas</span></span></button>
+    <button class="tile" data-nav-btn="tareas"><span class="flecha">${ICON.flecha}</span><span class="ic">${ICON.tareas}</span><span><span class="big" data-cuenta="${pend.length}">${pend.length}</span><span class="t" style="display:block">Tareas</span><span class="d" style="display:block">${paraHoy.length} para hoy · ${venc.length} vencidas</span></span></button>
+    <button class="tile" data-nav-btn="cronograma"><span class="flecha">${ICON.flecha}</span><span class="ic">${ICON.cronograma}</span><span><span class="big">${sig ? fCorta(sig.fecha) : '—'}</span><span class="t" style="display:block">Cronograma</span><span class="d" style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${sig ? esc(sig.ev ? sig.ev.titulo : sig.t.titulo) : 'Sin eventos próximos'}</span></span></button>
+    <button class="tile" data-nav-btn="economia"><span class="flecha">${ICON.flecha}</span><span class="ic">${ICON.economia}</span><span><span class="big ${e.balance >= 0 ? 'pos' : 'neg'}" data-cuenta="${e.balance}" data-fmt="plata">${plata(e.balance)}</span><span class="t" style="display:block">Economía</span><span class="d" style="display:block">Balance mensual previsto</span></span></button>
+    <button class="tile" data-nav-btn="presupuestos"><span class="flecha">${ICON.flecha}</span><span class="ic">${ICON.presupuestos}</span><span><span class="big" data-cuenta="${presAbiertos}">${presAbiertos}</span><span class="t" style="display:block">Presupuestos</span><span class="d" style="display:block">En curso · generador PDF</span></span></button>
+  </div>
+
+  <div class="g2">
+    <section class="panel">
+      <div class="panel-h"><h2>Foco de hoy</h2><a class="btn btn-sm btn-wa" href="${esc(linkWA(msgResumenDia()))}" target="_blank" rel="noopener">${ICON.wa} Mandarme el resumen</a></div>
+      <div data-live="ini-foco">${foco.length ? `<ul class="lista">${foco.map(t => htmlTarea(t, true)).join('')}</ul>` : `<div class="vacio">${sinDatos() ? 'Todavía no hay tareas. Escribile a la IA arriba o agregá una en Tareas.' : 'Nada urgente para hoy.'}</div>`}</div>
+    </section>
+    <div style="display:grid;gap:18px;align-content:start">
+      <section class="panel">
+        <div class="panel-h"><h2>Agenda</h2><span class="sub">Próximos 30 días</span></div>
+        <div data-live="ini-agenda">${prox.length ? `<ul class="agenda">${prox.slice(0,6).map(x => htmlAgenda(x)).join('')}</ul>` : `<div class="vacio">Sin actividades próximas. Agendalas en Cronograma o pedíselo a la IA.</div>`}</div>
+      </section>
+      <section class="panel">
+        <div class="panel-h"><h2>${cap(MESES[new Date().getMonth()])} en números</h2></div>
+        <table class="t" data-live="ini-plata"><tbody>
+          <tr><td>Ingresos fijos</td><td class="r monto">${plata(e.ing)}</td></tr>
+          <tr><td>Gastos fijos + servicios</td><td class="r monto">− ${plata(e.egresos)}</td></tr>
+          <tr><td>Movimientos del mes</td><td class="r monto ${mm.neto >= 0 ? 'pos' : 'neg'}">${mm.neto >= 0 ? '+' : '−'} ${plata(Math.abs(mm.neto))}</td></tr>
+        </tbody><tfoot><tr><td>Balance previsto</td><td class="r monto">${plata(e.balance + mm.neto)}</td></tr></tfoot></table>
+      </section>
+    </div>
+  </div>`;
+},
+
+ia(){
+  const sinIA = !SY.sample;
+  const r = UI.iaRes;
+  const grupos = r ? [
+    ['tareas', 'Tareas', x => `<div class="tt">${esc(x.titulo)}</div><div class="mt"><span class="chip">${esc(area(x.area).nombre)}</span><span>${({hoy:'Hoy',corto:'Corto plazo',largo:'Largo plazo'})[x.plazo] || 'Corto plazo'}</span>${x.fecha ? `<span class="pill">${fCorta(x.fecha)}</span>` : ''}${x.prioridad === 'alta' ? '<span class="pill alta">Alta</span>' : ''}</div>`],
+    ['eventos', 'Agenda', x => `<div class="tt">${esc(x.titulo)}</div><div class="mt"><span class="pill">${fCorta(x.fecha)}${x.hora ? ' · ' + esc(x.hora) : ''}</span><span>${esc(area(x.area).nombre)}</span></div>`],
+    ['movimientos', 'Movimientos de plata', x => `<div class="tt">${esc(x.desc)}</div><div class="mt"><span class="${x.tipo === 'ingreso' ? 'pos' : 'neg'}" style="font-family:var(--f-mono)">${x.tipo === 'ingreso' ? '+' : '−'} ${plata(x.monto)}</span><span class="chip">${esc(x.cat)}</span><span>${fCorta(x.fecha)}</span></div>`],
+    ['cuentas', 'Deudas y cobros', x => `<div class="tt">${esc(x.nombre)}</div><div class="mt"><span>${x.tipo === 'cobrar' ? 'Me debe' : 'Debo'}</span><span style="font-family:var(--f-mono)">${x.monto ? plata(x.monto) : 'sin monto'}</span></div>`],
+    ['compras', 'Lista de compras', x => `<div class="tt">${esc(x.nombre)}</div>${x.monto ? `<div class="mt"><span style="font-family:var(--f-mono)">${plata(x.monto)}</span></div>` : ''}`],
+    ['notas', 'Notas (no se guardan solas)', x => `<div class="tt" style="font-weight:500">${esc(x)}</div>`]
+  ] : [];
+  const totalSel = r ? Object.values(UI.iaSel).filter(Boolean).length : 0;
+  return `
+  <div class="cab"><div><div class="eyebrow">Asistente IA</div><h1>Tirale todo, la IA lo ordena</h1>
+    <p>Pegá un chat de WhatsApp, notas sueltas o una captura de pantalla. La IA separa tareas, fechas, gastos, cobros y compras, y vos elegís qué guardar.</p></div>
+    <div class="seg" role="group" aria-label="Modo"><button data-act="ia-modo" data-v="ordenar" aria-pressed="${UI.iaModo === 'ordenar'}">Ordenar</button><button data-act="ia-modo" data-v="preguntar" aria-pressed="${UI.iaModo === 'preguntar'}">Preguntar</button></div>
+  </div>
+  ${sinIA ? '<div class="aviso">La IA todavía no está activada. Seguí el paso 3 del README para conectarla.</div>' : ''}
+  ${UI.iaModo === 'ordenar' ? `
+  <div class="ia-wrap">
+    <section class="panel ia-caja" style="display:grid;gap:12px">
+      <label class="lbl" for="ia-txt" style="margin:0">Lo que tengas, como venga</label>
+      <textarea class="inp" id="ia-txt" placeholder="Ej:\nMañana a las 10 entrego los planos del Morumbí a Yanuzzi.\nGasté 8.500 en tinta para la impresora.\nJulieta me transfirió 90 mil.\nEl viernes 6 tengo el coloquio de Práctica 2.\nLe debo 5 lucas a Brian.\nComprar cinta métrica.">${esc(UI.iaTexto)}</textarea>
+      <div class="ejemplos" aria-label="Ejemplos">
+        <button data-act="ia-ej" data-t="Mañana 9 hs reunión en el municipio por la plaza Iberá. Antes tengo que imprimir los planos.">Reunión + preparar</button>
+        <button data-act="ia-ej" data-t="Hoy gasté 3.200 en nafta y 6.000 en el súper. Me pagaron 45 mil por el mantenimiento de una PC.">Gastos del día</button>
+        <button data-act="ia-ej" data-t="Todos los martes y jueves a las 20 tengo fútbol.">Rutina semanal</button>
+      </div>
+      <div class="adjuntos" data-live="ia-adj">${UI.iaImgs.map((im, i) => `<figure><img src="${im.url}" alt="Captura ${i+1}"><button data-act="ia-quitar-img" data-i="${i}" aria-label="Quitar">✕</button></figure>`).join('')}</div>
+      <div class="fila-acc" style="justify-content:space-between">
+        <span class="fila-acc">
+          <label class="btn btn-sm" for="ia-img" style="cursor:pointer">${ICON.img} Adjuntar captura</label>
+          <input type="file" id="ia-img" accept="image/png,image/jpeg,image/webp,image/gif" multiple hidden>
+          ${UI.iaTexto || UI.iaImgs.length ? '<button class="btn btn-sm btn-ghost" data-act="ia-limpiar">Limpiar</button>' : ''}
+        </span>
+        <button class="btn btn-accent" data-act="ia-ordenar" ${sinIA || UI.iaPensando ? 'disabled' : ''}>${ICON.ia} Ordenar con IA</button>
+      </div>
+      <span style="font-size:11.5px;color:var(--fg-3)">Atajo: Ctrl + Enter. Las capturas se mandan a la IA solo para leerlas.</span>
+    </section>
+    <section class="panel">
+      <div class="panel-h"><h2>Resultado</h2>${r && totalSel ? `<button class="btn btn-primary btn-sm" data-act="ia-aplicar">Guardar ${totalSel} seleccionados</button>` : ''}</div>
+      ${UI.iaPensando ? `<div class="pensando"><span class="orbe"></span>Ordenando tu información</div>${UI.iaStream ? `<pre style="white-space:pre-wrap;font-size:11px;color:var(--fg-3);max-height:160px;overflow:auto;margin:10px 0 0">${esc(UI.iaStream.slice(-600))}</pre>` : ''}`
+      : UI.iaError ? `<div class="aviso" style="background:var(--bad-soft);color:var(--bad)">${esc(UI.iaError)}</div>`
+      : r ? `${r.resumen ? `<p style="margin:0 0 14px;color:var(--fg-2)">${esc(r.resumen)}</p>` : ''}
+        ${grupos.map(([k, n, f]) => (r[k] || []).length ? `<div class="res-grupo"><h3>${n}</h3>${r[k].map((x, i) => k === 'notas' ? `<div class="res-item" style="cursor:default;grid-template-columns:1fr">${f(x)}</div>` : `<label class="res-item ${UI.iaSel[k + i] ? '' : 'off'}" style="animation-delay:${i * 0.04}s"><input type="checkbox" data-iasel="${k + i}" ${UI.iaSel[k + i] ? 'checked' : ''}><div>${f(x)}</div></label>`).join('')}</div>` : '').join('')}
+        ${!grupos.some(([k]) => (r[k] || []).length) ? '<div class="vacio">La IA no encontró nada para ordenar en ese texto.</div>' : ''}`
+      : '<div class="vacio">Acá vas a ver lo que la IA encontró, separado por tipo. Nada se guarda hasta que lo confirmes.</div>'}
+    </section>
+  </div>
+  <div class="g2">
+    <section class="panel">
+      <div class="panel-h"><h2>WhatsApp</h2><span class="sub">Cómo usarlo con la IA</span></div>
+      <div class="wa-panel">
+        <ol>
+          <li>En WhatsApp, mantené apretado el mensaje (o varios) → <b>Copiar</b>, o sacale captura al chat.</li>
+          <li>Pegalo o adjuntalo acá y tocá <b>Ordenar con IA</b>.</li>
+          <li>En cada fecha vas a tener <b>+ Calendario</b> (tu celular te avisa) y <b>WhatsApp</b> (te lo mandás a vos mismo).</li>
+        </ol>
+        <div class="campo"><label class="lbl" for="p-wa">Tu número de WhatsApp (para mandarte recordatorios a vos)</label><input class="inp" id="p-wa" data-perfil="whatsapp" inputmode="tel" placeholder="Ej: 5493756123456 (con 549 y sin 0 ni 15)" value="${esc(S.perfil.whatsapp)}"></div>
+      </div>
+    </section>
+    <section class="panel">
+      <div class="panel-h"><h2>Lo último que ordenaste</h2></div>
+      ${S.ia.historial.length ? `<ul class="agenda">${S.ia.historial.slice(-6).reverse().map(h => `<li style="grid-template-columns:70px minmax(0,1fr)"><div class="f">${fCorta(h.fecha)}<br>${esc(h.hora || '')}</div><div><div class="tt" style="font-weight:500">${esc(h.resumen || h.texto.slice(0, 120))}</div><div class="mt">${esc(h.conteo || '')}</div></div></li>`).join('')}</ul>` : '<div class="vacio">Cuando guardes algo ordenado por la IA, queda registrado acá.</div>'}
+    </section>
+  </div>` : `
+  <section class="panel" style="display:grid;gap:12px">
+    <div class="panel-h" style="margin:0"><h2>Preguntale sobre tus cosas</h2>${S.ia.chat.length ? '<button class="btn btn-sm btn-ghost" data-act="chat-limpiar">Nueva conversación</button>' : ''}</div>
+    <div class="chat" id="chat">
+      ${S.ia.chat.length ? S.ia.chat.map(m => `<div class="burbuja ${m.role === 'user' ? 'yo' : 'ia'}">${esc(m.content)}</div>`).join('') : `<div class="vacio">Probá: “¿Qué tengo que hacer esta semana?”, “¿Cuánto gasté en octubre?”, “Armame un plan para hoy”.</div>`}
+      ${UI.chatPensando ? `<div class="burbuja ia">${UI.iaStream ? esc(UI.iaStream) : '<span class="pensando"><span class="orbe"></span>Pensando</span>'}</div>` : ''}
+    </div>
+    <form id="f-chat" class="fila-acc" style="flex-wrap:nowrap">
+      <input class="inp" id="chat-txt" placeholder="Escribí tu pregunta…" value="${esc(UI.chatTexto)}" autocomplete="off" ${sinIA ? 'disabled' : ''}>
+      <button class="btn btn-accent" type="submit" ${sinIA || UI.chatPensando ? 'disabled' : ''}>Enviar</button>
+    </form>
+  </section>`}`;
+},
+
+tareas(){
+  const ed = UI.tEditar ? TAREAS().find(t => t.id === UI.tEditar) : null;
+  const f = ed || {titulo:'', area:'muni', plazo:'hoy', fecha:'', prioridad:'media', nota:'', diaria:false};
+  const l = TAREAS().filter(t => (!UI.tArea || t.area === UI.tArea) && (UI.tHechas || !tareaHecha(t)));
+  const cols = [{id:'hoy', n:'Hoy'}, {id:'corto', n:'Corto plazo'}, {id:'largo', n:'Largo plazo'}].filter(c => UI.tPlazo === 'todas' || UI.tPlazo === c.id);
+  const hechasTot = TAREAS().filter(tareaHecha).length;
+  return `
+  <div class="cab"><div><div class="eyebrow">Tareas</div><h1>Diarias, corto y largo plazo</h1>
+    <p>Arrastrá una tarea a otra columna para cambiarle el plazo. Las que tienen fecha traen botones para recordártelas.</p></div>
+    <button class="btn" data-nav-btn="ia">${ICON.ia} Cargar con IA</button></div>
+  <section class="panel">
+    <div class="panel-h"><h2>${ed ? 'Editar tarea' : 'Nueva tarea'}</h2>${ed ? '<button class="btn btn-sm" data-act="tarea-cancelar">Cancelar edición</button>' : ''}</div>
+    <form id="f-tarea" class="form-fila form-tarea" autocomplete="off">
+      <div class="campo ancho"><label class="lbl" for="t-titulo">Tarea</label><input class="inp" id="t-titulo" required placeholder="Ej: Enviar planos a la Arq. Acuña" value="${esc(f.titulo)}"></div>
+      <div class="campo"><label class="lbl" for="t-area">Área / cliente</label><select class="inp" id="t-area">${optAreas(f.area)}</select></div>
+      <div class="campo"><label class="lbl" for="t-plazo">Plazo</label><select class="inp" id="t-plazo"><option value="hoy" ${f.plazo==='hoy'?'selected':''}>Hoy</option><option value="corto" ${f.plazo==='corto'?'selected':''}>Corto plazo</option><option value="largo" ${f.plazo==='largo'?'selected':''}>Largo plazo</option></select></div>
+      <div class="campo"><label class="lbl" for="t-fecha">Fecha límite</label><input class="inp" type="date" id="t-fecha" value="${esc(f.fecha)}"></div>
+      <div class="campo"><label class="lbl" for="t-prio">Prioridad</label><select class="inp" id="t-prio"><option value="alta" ${f.prioridad==='alta'?'selected':''}>Alta</option><option value="media" ${f.prioridad==='media'?'selected':''}>Media</option><option value="baja" ${f.prioridad==='baja'?'selected':''}>Baja</option></select></div>
+      <button class="btn btn-primary" type="submit">${ed ? 'Guardar cambios' : 'Agregar'}</button>
+    </form>
+    <div class="extra">
+      <label><input type="checkbox" id="t-diaria" ${f.diaria ? 'checked' : ''}> Repetir cada día</label>
+      <input class="inp" id="t-nota" placeholder="Nota (opcional)" value="${esc(f.nota)}" aria-label="Nota">
+    </div>
+  </section>
+  <div class="filtros">
+    <div class="seg" role="group" aria-label="Plazo">${[['todas','Todas'],['hoy','Hoy'],['corto','Corto'],['largo','Largo']].map(([v,n]) => `<button data-act="t-plazo" data-v="${v}" aria-pressed="${UI.tPlazo===v}">${n}</button>`).join('')}</div>
+    <select class="inp" id="t-filtro-area" aria-label="Filtrar por área"><option value="">Todas las áreas</option>${optAreas(UI.tArea)}</select>
+    <label class="extra" style="margin:0"><input type="checkbox" id="t-ver-hechas" ${UI.tHechas ? 'checked' : ''}> Mostrar hechas (${hechasTot})</label>
+  </div>
+  <div class="${cols.length === 3 ? 'g3' : cols.length === 2 ? 'g2' : ''}">
+    ${cols.map(c => {
+      const lc = l.filter(t => (t.diaria ? 'hoy' : t.plazo) === c.id).sort(ordenarTareas);
+      return `<section class="col" data-drop="${c.id}"><div class="col-h"><h3>${c.n}</h3><span>${lc.filter(t => !tareaHecha(t)).length} pendientes</span></div>
+        ${lc.length ? `<ul class="lista">${lc.map(t => htmlTarea(t)).join('')}</ul>` : `<div class="vacio">Nada en ${c.n.toLowerCase()}. Soltá una tarea acá.</div>`}</section>`;
+    }).join('')}
+  </div>`;
+},
+
+economia(){
+  const e = resumenEco();
+  const mm = movMes(UI.mesMov);
+  const [ay, am] = UI.mesMov.split('-').map(Number);
+  const ah = S.eco.ahorro[UI.anioAhorro] || Array(12).fill(0);
+  const metas = S.eco.metas;
+  const porCobrar = suma(metas.filter(m => m.tipo === 'cobrar' && !m.hecha));
+  const porPagar = suma(metas.filter(m => m.tipo === 'pagar' && !m.hecha));
+  const metasPend = suma(metas.filter(m => m.tipo === 'meta' && !m.hecha));
+  const lista = (col, titulo, sub) => `
+    <section class="panel">
+      <div class="panel-h"><h2>${titulo}</h2><span class="sub">${sub}</span></div>
+      <div class="ed-lista">${S.eco[col].map(x => `
+        <div class="ed-fila">
+          <input class="inp" id="f-${col}-${x.id}-nombre" data-col="${col}" data-id="${x.id}" data-f="nombre" value="${esc(x.nombre)}" aria-label="Concepto">
+          <input class="inp num" id="f-${col}-${x.id}-monto" data-col="${col}" data-id="${x.id}" data-f="monto" data-n="1" inputmode="decimal" value="${x.monto || ''}" placeholder="0" aria-label="Importe">
+          <button class="btn btn-ghost danger btn-sm" data-act="borrar" data-col="${col}" data-id="${x.id}" aria-label="Borrar">✕</button>
+        </div>`).join('') || '<div class="vacio">Vacío</div>'}</div>
+      <button class="btn btn-sm" style="margin-top:10px" data-act="eco-add" data-col="${col}">+ Agregar</button>
+      <div class="ed-total" data-live="tot-${col}"><span>Total</span><span class="num">${plata(suma(S.eco[col]))}</span></div>
+    </section>`;
+  return `
+  <div class="cab"><div><div class="eyebrow">Economía personal</div><h1>Ingresos, gastos y ahorro</h1>
+    <p>Tu presupuesto mensual fijo y el registro del día a día. Los gastos que le contás a la IA caen acá.</p></div>
+    <button class="btn" data-nav-btn="ia">${ICON.ia} Cargar con IA</button></div>
+  <div class="cifras" data-live="eco-cifras">
+    <div class="cifra"><small>Ingresos / mes</small><b data-cuenta="${e.ing}" data-fmt="plata">${plata(e.ing)}</b><span>${S.eco.ingresos.filter(x => x.monto > 0).length} fuentes activas</span></div>
+    <div class="cifra"><small>Gastos + servicios</small><b data-cuenta="${e.egresos}" data-fmt="plata">${plata(e.egresos)}</b><span>Servicios: ${plata(e.ser)}</span></div>
+    <div class="cifra"><small>Balance mensual</small><b class="${e.balance >= 0 ? 'pos' : 'neg'}" data-cuenta="${e.balance}" data-fmt="plata">${plata(e.balance)}</b><span>${Math.round(e.pct*100)} % de ahorro</span></div>
+    <div class="cifra"><small>Ahorro ${e.anio}</small><b data-cuenta="${e.ahorro}" data-fmt="plata">${plata(e.ahorro)}</b><span>Por cobrar: ${plata(porCobrar)}</span></div>
+  </div>
+  <section class="panel">
+    <div class="panel-h"><h2>Registro de movimientos</h2>
+      <div class="cal-nav"><button class="btn btn-sm" data-act="mov-mes" data-d="-1" aria-label="Mes anterior">‹</button><h2 style="font-size:14px;min-width:130px">${MESES[am-1]} ${ay}</h2><button class="btn btn-sm" data-act="mov-mes" data-d="1" aria-label="Mes siguiente">›</button></div></div>
+    <form id="f-mov" class="form-fila form-mov" autocomplete="off">
+      <div class="campo"><label class="lbl" for="m-fecha">Fecha</label><input class="inp" type="date" id="m-fecha" value="${UI.mesMov === hoyISO().slice(0,7) ? hoyISO() : UI.mesMov + '-01'}" required></div>
+      <div class="campo ancho"><label class="lbl" for="m-desc">Descripción</label><input class="inp" id="m-desc" placeholder="Ej: Cobro renders Garden Ugarte" required></div>
+      <div class="campo"><label class="lbl" for="m-tipo">Tipo</label><select class="inp" id="m-tipo"><option value="gasto">Gasto</option><option value="ingreso">Ingreso</option></select></div>
+      <div class="campo"><label class="lbl" for="m-cat">Categoría</label><select class="inp" id="m-cat">${CATS.map(c => `<option>${c}</option>`).join('')}</select></div>
+      <div class="campo"><label class="lbl" for="m-monto">Importe</label><input class="inp num" id="m-monto" inputmode="decimal" placeholder="0" required></div>
+      <button class="btn btn-primary" type="submit">Registrar</button>
+    </form>
+    <div class="tabla-wrap" style="margin-top:14px" data-live="mov-tabla">
+      ${mm.l.length ? `<table class="t"><thead><tr><th>Fecha</th><th>Descripción</th><th>Categoría</th><th class="r">Importe</th><th></th></tr></thead><tbody>
+        ${mm.l.map(m => `<tr><td class="monto">${fCorta(m.fecha)}</td><td>${esc(m.desc)}</td><td><span class="chip">${esc(m.cat)}</span></td>
+          <td class="r monto ${m.tipo === 'ingreso' ? 'pos' : 'neg'}">${m.tipo === 'ingreso' ? '+' : '−'} ${plata(m.monto)}</td>
+          <td class="r"><button class="btn btn-ghost danger btn-sm" data-act="borrar" data-col="mov" data-id="${m.id}" aria-label="Borrar">✕</button></td></tr>`).join('')}
+        </tbody><tfoot><tr><td colspan="3">Ingresos ${plata(mm.ing)} · Gastos ${plata(mm.gas)}</td><td class="r monto ${mm.neto >= 0 ? 'pos' : 'neg'}">${mm.neto >= 0 ? '+' : '−'} ${plata(Math.abs(mm.neto))}</td><td></td></tr></tfoot></table>`
+      : `<div class="vacio">Sin movimientos en ${MESES[am-1]}. Cargá el primero arriba o contáselo a la IA.</div>`}
+    </div>
+  </section>
+  <div class="g3">${lista('ingresos', 'Ingresos mensuales', 'Fijos')}${lista('gastos', 'Gastos mensuales', 'Fijos')}${lista('servicios', 'Servicios', 'Se suman a los gastos')}</div>
+  <section class="panel">
+    <div class="panel-h"><h2>Caja de ahorro</h2>
+      <div class="cal-nav"><button class="btn btn-sm" data-act="ahorro-anio" data-d="-1" aria-label="Año anterior">‹</button><h2 style="font-size:14px;min-width:60px">${UI.anioAhorro}</h2><button class="btn btn-sm" data-act="ahorro-anio" data-d="1" aria-label="Año siguiente">›</button></div></div>
+    <div data-live="graf">${graficoAhorro(ah)}</div>
+    <div class="meses">${ah.map((v, i) => `<div class="campo"><label for="ah-${i}">${MESES[i].slice(0,3)}</label><input class="inp num" id="ah-${i}" data-ahorro="${i}" inputmode="decimal" value="${v || ''}" placeholder="0"></div>`).join('')}</div>
+    <div class="ed-total" data-live="tot-ahorro"><span>Total ahorrado ${UI.anioAhorro}</span><span class="num">${plata(ah.reduce((a, n) => a + (Number(n)||0), 0))}</span></div>
+  </section>
+  <div class="g2">
+    <section class="panel">
+      <div class="panel-h"><h2>Metas y cuentas pendientes</h2><span class="sub" data-live="metas-sub">Me deben ${plata(porCobrar)} · Debo ${plata(porPagar)}</span></div>
+      <div class="ed-lista">${metas.map(m => `
+        <div class="ed-fila con-tipo ${m.hecha ? 'hecho' : ''}">
+          <input type="checkbox" data-act="eco-check" data-col="metas" data-id="${m.id}" ${m.hecha ? 'checked' : ''} aria-label="Cumplida">
+          <input class="inp" id="f-metas-${m.id}-nombre" data-col="metas" data-id="${m.id}" data-f="nombre" value="${esc(m.nombre)}" aria-label="Meta">
+          <select class="inp estado-sel" id="f-metas-${m.id}-tipo" data-col="metas" data-id="${m.id}" data-f="tipo" aria-label="Tipo"><option value="meta" ${m.tipo==='meta'?'selected':''}>Meta</option><option value="cobrar" ${m.tipo==='cobrar'?'selected':''}>Me deben</option><option value="pagar" ${m.tipo==='pagar'?'selected':''}>Debo</option></select>
+          <input class="inp num" id="f-metas-${m.id}-monto" data-col="metas" data-id="${m.id}" data-f="monto" data-n="1" inputmode="decimal" value="${m.monto || ''}" placeholder="0" aria-label="Importe">
+          <button class="btn btn-ghost danger btn-sm" data-act="borrar" data-col="metas" data-id="${m.id}" aria-label="Borrar">✕</button>
+        </div>`).join('') || '<div class="vacio">Vacío</div>'}</div>
+      <button class="btn btn-sm" style="margin-top:10px" data-act="eco-add" data-col="metas">+ Agregar</button>
+      <div class="ed-total" data-live="tot-metas"><span>Metas sin cumplir</span><span class="num">${plata(metasPend)}</span></div>
+    </section>
+    <section class="panel">
+      <div class="panel-h"><h2>Lista de compras</h2></div>
+      <div class="ed-lista">${S.eco.compras.map(m => `
+        <div class="ed-fila con-check ${m.hecha ? 'hecho' : ''}">
+          <input type="checkbox" data-act="eco-check" data-col="compras" data-id="${m.id}" ${m.hecha ? 'checked' : ''} aria-label="Comprado">
+          <input class="inp" id="f-compras-${m.id}-nombre" data-col="compras" data-id="${m.id}" data-f="nombre" value="${esc(m.nombre)}" aria-label="Artículo">
+          <input class="inp num" id="f-compras-${m.id}-monto" data-col="compras" data-id="${m.id}" data-f="monto" data-n="1" inputmode="decimal" value="${m.monto || ''}" placeholder="Precio" aria-label="Precio estimado">
+          <button class="btn btn-ghost danger btn-sm" data-act="borrar" data-col="compras" data-id="${m.id}" aria-label="Borrar">✕</button>
+        </div>`).join('') || '<div class="vacio">Vacío</div>'}</div>
+      <button class="btn btn-sm" style="margin-top:10px" data-act="eco-add" data-col="compras">+ Agregar</button>
+      <div class="ed-total" data-live="tot-compras"><span>Estimado pendiente</span><span class="num">${plata(suma(S.eco.compras.filter(c => !c.hecha)))}</span></div>
+    </section>
+  </div>`;
+},
+
+cronograma(){
+  const [y, m] = UI.calMes.split('-').map(Number);
+  const offset = (new Date(y, m-1, 1).getDay() + 6) % 7;
+  const inicio = isoDe(new Date(y, m-1, 1 - offset));
+  const fin = sumarDias(inicio, 41);
+  const porDia = {}; agendaEntre(inicio, fin).forEach(x => (porDia[x.fecha] = porDia[x.fecha] || []).push(x));
+  const hoy = hoyISO();
+  const ed = UI.evEditar ? EVENTOS().find(e => e.id === UI.evEditar) : null;
+  const f = ed || {titulo:'', fecha:UI.calSel, hora:'', area:'prof', repite:'', nota:''};
+  const delDia = agendaEntre(UI.calSel, UI.calSel);
+  const prox = agendaEntre(hoy, sumarDias(hoy, 45)).slice(0, 12);
+  let grid = DOW.map(d => `<div class="dow">${d}</div>`).join('');
+  for(let i = 0; i < 42; i++){
+    const iso = sumarDias(inicio, i), d = deISO(iso), items = porDia[iso] || [];
+    grid += `<button class="dia ${d.getMonth() !== m-1 ? 'fuera' : ''} ${iso === hoy ? 'hoy' : ''} ${iso === UI.calSel ? 'sel' : ''}" data-act="cal-dia" data-f="${iso}" aria-label="${fDia(iso)}${items.length ? `, ${items.length} actividades` : ''}">
+      <span class="d">${d.getDate()}</span>
+      ${items.slice(0,3).map(x => `<span class="ev ${x.tipo === 'tarea' ? 'tk' : ''}">${x.ev && x.ev.hora ? x.ev.hora + ' ' : ''}${esc(x.ev ? x.ev.titulo : x.t.titulo)}</span>`).join('')}
+      ${items.length > 3 ? `<span class="ev mas">+${items.length - 3} más</span>` : ''}</button>`;
+  }
+  return `
+  <div class="cab"><div><div class="eyebrow">Cronograma</div><h1>Actividades y fechas</h1>
+    <p>Eventos, entregas, clases y rutinas semanales. Cada uno tiene botones para crear el recordatorio en tu calendario o mandártelo por WhatsApp.</p></div>
+    <button class="btn" data-nav-btn="ia">${ICON.ia} Agendar con IA</button></div>
+  <section class="panel">
+    <div class="panel-h"><h2>${ed ? 'Editar actividad' : 'Nueva actividad'}</h2>${ed ? '<button class="btn btn-sm" data-act="ev-cancelar">Cancelar edición</button>' : ''}</div>
+    <form id="f-evento" class="form-fila form-evento" autocomplete="off">
+      <div class="campo ancho"><label class="lbl" for="e-titulo">Actividad</label><input class="inp" id="e-titulo" required placeholder="Ej: Entrega de planos Morumbí" value="${esc(f.titulo)}"></div>
+      <div class="campo"><label class="lbl" for="e-fecha">Fecha</label><input class="inp" type="date" id="e-fecha" required value="${esc(f.fecha)}"></div>
+      <div class="campo"><label class="lbl" for="e-hora">Hora</label><input class="inp" type="time" id="e-hora" value="${esc(f.hora)}"></div>
+      <div class="campo"><label class="lbl" for="e-area">Área</label><select class="inp" id="e-area">${optAreas(f.area)}</select></div>
+      <div class="campo"><label class="lbl" for="e-repite">Repetir</label><select class="inp" id="e-repite"><option value="">No se repite</option><option value="semanal" ${f.repite === 'semanal' ? 'selected' : ''}>Cada semana</option></select></div>
+      <button class="btn btn-primary" type="submit">${ed ? 'Guardar' : 'Agregar'}</button>
+    </form>
+    <div class="extra"><input class="inp" id="e-nota" placeholder="Nota (opcional)" value="${esc(f.nota)}" aria-label="Nota"></div>
+  </section>
+  <div class="cron">
+    <section class="panel" style="padding:14px">
+      <div class="panel-h">
+        <div class="cal-nav"><button class="btn btn-sm" data-act="cal-mes" data-d="-1" aria-label="Mes anterior">‹</button><h2>${MESES[m-1]} ${y}</h2><button class="btn btn-sm" data-act="cal-mes" data-d="1" aria-label="Mes siguiente">›</button></div>
+        <button class="btn btn-sm" data-act="cal-hoy">Hoy</button>
+      </div>
+      <div class="cal">${grid}</div>
+    </section>
+    <div style="display:grid;gap:18px;align-content:start">
+      <section class="panel"><div class="panel-h"><h2>${cap(fDia(UI.calSel))}</h2></div>
+        ${delDia.length ? `<ul class="agenda">${delDia.map(x => htmlAgenda(x, x.fecha < hoy, true)).join('')}</ul>` : '<div class="vacio">Nada este día.</div>'}</section>
+      <section class="panel"><div class="panel-h"><h2>Próximas</h2><span class="sub">45 días</span></div>
+        ${prox.length ? `<ul class="agenda">${prox.map(x => htmlAgenda(x, false, true)).join('')}</ul>` : '<div class="vacio">No hay actividades próximas cargadas.</div>'}</section>
+    </div>
+  </div>`;
+},
+
+presupuestos(){
+  const P = S.perfil, b = S.pres.borrador;
+  const guardado = S.pres.historial.find(h => h.id === b.id);
+  return `
+  <div class="cab"><div><div class="eyebrow">Presupuestos</div><h1>Generador de presupuestos</h1>
+    <p>Completá los datos y mirá la hoja. Guardalo en el historial, bajalo en PDF y, cuando te paguen, registralo como ingreso.</p></div>
+    <div class="acciones">
+      <button class="btn" data-act="pres-nuevo">Nuevo</button>
+      <button class="btn btn-primary" data-act="pres-guardar">${guardado ? 'Actualizar en historial' : 'Guardar en historial'}</button>
+      <button class="btn btn-accent" data-act="pres-pdf">Descargar PDF</button>
+    </div></div>
+  <div class="pres">
+    <section class="panel pres-ed">
+      <div class="sec"><h3>Prestador</h3>
+        <div class="campo"><label class="lbl" for="p-nombre">Nombre</label><input class="inp" id="p-nombre" data-perfil="nombre" value="${esc(P.nombre)}" placeholder="Benjamín Nuñez"></div>
+        <div class="dos">
+          <div class="campo"><label class="lbl" for="p-tel">Teléfono / WhatsApp</label><input class="inp" id="p-tel" data-perfil="telefono" value="${esc(P.telefono)}" placeholder="3756 …"></div>
+          <div class="campo"><label class="lbl" for="p-email">Email</label><input class="inp" id="p-email" data-perfil="email" value="${esc(P.email)}" placeholder="tu@email.com"></div>
+        </div>
+        <div class="campo"><label class="lbl" for="p-ciudad">Ubicación</label><input class="inp" id="p-ciudad" data-perfil="ciudad" value="${esc(P.ciudad)}" placeholder="Gdor. Virasoro, Corrientes"></div>
+      </div>
+      <div class="sec"><h3>Cliente</h3>
+        <div class="campo"><label class="lbl" for="b-cliente">Nombre del cliente</label><input class="inp" id="b-cliente" data-pres="cliente" value="${esc(b.cliente)}" placeholder="Ej: Arq. Julieta Acuña"></div>
+        <div class="campo"><label class="lbl" for="b-servicio">Servicio / proyecto</label><input class="inp" id="b-servicio" data-pres="servicio" value="${esc(b.servicio)}" placeholder="Ej: Renders Garden Ugarte"></div>
+        <div class="dos">
+          <div class="campo"><label class="lbl" for="b-numero">N.º</label><input class="inp" id="b-numero" data-pres="numero" value="${esc(b.numero)}"></div>
+          <div class="campo"><label class="lbl" for="b-fecha">Fecha</label><input class="inp" type="date" id="b-fecha" data-pres="fecha" value="${esc(b.fecha)}"></div>
+        </div>
+      </div>
+      <div class="sec"><h3>Ítems</h3>
+        ${b.items.map(i => `<div class="item-ed">
+          <input class="inp num" id="f-items-${i.id}-cant" data-col="items" data-id="${i.id}" data-f="cant" data-n="1" inputmode="decimal" value="${i.cant}" aria-label="Cantidad">
+          <input class="inp" id="f-items-${i.id}-desc" data-col="items" data-id="${i.id}" data-f="desc" value="${esc(i.desc)}" placeholder="Descripción (ej: Render exterior D5)" aria-label="Descripción">
+          <button class="btn btn-ghost danger btn-sm" data-act="borrar" data-col="items" data-id="${i.id}" aria-label="Borrar ítem">✕</button>
+          <input class="inp num pr" id="f-items-${i.id}-precio" data-col="items" data-id="${i.id}" data-f="precio" data-n="1" inputmode="decimal" value="${i.precio || ''}" placeholder="Precio unitario" aria-label="Precio unitario">
+          <div class="lt" data-live="lt-${i.id}">${ars2.format((Number(i.cant)||0) * (Number(i.precio)||0))}</div>
+        </div>`).join('')}
+        <button class="btn btn-sm" data-act="item-add">+ Agregar ítem</button>
+      </div>
+      <div class="sec"><h3>Notas y condiciones</h3><textarea class="inp" id="b-notas" data-pres="notas" rows="3">${esc(b.notas)}</textarea></div>
+    </section>
+    <div class="hoja-wrap" data-live="hoja">${htmlHoja()}</div>
+  </div>
+  <section class="panel">
+    <div class="panel-h"><h2>Historial</h2><span class="sub" data-live="hist-sub">${S.pres.historial.length} presupuestos · cobrado ${plata(suma(S.pres.historial.filter(h => h.estado === 'cobrado'), 'total'))}</span></div>
+    ${S.pres.historial.length ? `<div class="tabla-wrap"><table class="t"><thead><tr><th>N.º</th><th>Fecha</th><th>Cliente</th><th>Servicio</th><th class="r">Total</th><th>Estado</th><th></th></tr></thead><tbody>
+      ${S.pres.historial.slice().sort((a,b) => String(b.numero).localeCompare(String(a.numero))).map(h => `<tr>
+        <td class="monto">${esc(h.numero)}</td><td class="monto">${fCorta(h.fecha)}</td><td>${esc(h.cliente)}</td><td>${esc(h.servicio)}</td><td class="r monto">${plata(h.total)}</td>
+        <td><select class="inp estado-sel" id="h-est-${h.id}" data-hist="${h.id}" aria-label="Estado">${['borrador','enviado','aceptado','cobrado','rechazado'].map(s => `<option value="${s}" ${h.estado === s ? 'selected' : ''}>${cap(s)}</option>`).join('')}</select></td>
+        <td class="r" style="white-space:nowrap"><button class="btn btn-ghost btn-sm" data-act="hist-abrir" data-id="${h.id}">Abrir</button>${h.estado === 'cobrado' && !h.cobroRegistrado ? `<button class="btn btn-ghost btn-sm" data-act="hist-cobro" data-id="${h.id}">Registrar ingreso</button>` : h.cobroRegistrado ? '<span class="pill ok">Ingreso registrado</span>' : ''}<button class="btn btn-ghost danger btn-sm" data-act="borrar" data-col="hist" data-id="${h.id}">Borrar</button></td>
+      </tr>`).join('')}</tbody></table></div>` : '<div class="vacio">Todavía no guardaste presupuestos. Usá “Guardar en historial” para seguirles el estado: enviado, aceptado, cobrado.</div>'}
+  </section>`;
+}
+};
+
+function htmlHoja(){
+  const P = S.perfil, b = S.pres.borrador;
+  const sub = b.items.reduce((a, i) => a + (Number(i.cant)||0) * (Number(i.precio)||0), 0);
+  return `<div class="hoja" id="hoja">
+    <div class="h-cab">
+      <div><p class="h-n">${esc(P.nombre) || '<span class="ph">Tu nombre</span>'}</p><div class="h-l">${esc(P.lema)}</div>
+        <div class="h-datos">${[P.telefono && 'Tel. ' + esc(P.telefono), P.email && esc(P.email), P.ciudad && esc(P.ciudad)].filter(Boolean).join('<br>')}</div></div>
+      <div class="h-meta"><div class="h-badge">Presupuesto</div><div>N.º <strong>${esc(b.numero) || '—'}</strong></div><div>Fecha <strong>${fLarga(b.fecha)}</strong></div></div>
+    </div>
+    <div class="h-cli"><small>Cliente</small><div class="cn">${esc(b.cliente) || '<span class="ph">Nombre del cliente</span>'}</div><div class="cs">${esc(b.servicio) || '<span class="ph">Servicio o proyecto</span>'}</div></div>
+    <table class="h-t"><thead><tr><th class="c">Cant.</th><th>Descripción</th><th class="r">P. unitario</th><th class="r">Total</th></tr></thead><tbody>
+      ${b.items.length ? b.items.map(i => `<tr><td class="c">${Number(i.cant)||0}</td><td>${esc(i.desc) || '<span class="ph">Sin descripción</span>'}</td><td class="r">${ars2.format(Number(i.precio)||0)}</td><td class="r"><b>${ars2.format((Number(i.cant)||0) * (Number(i.precio)||0))}</b></td></tr>`).join('') : '<tr><td colspan="4" class="ph" style="text-align:center;padding:20px">Agregá ítems desde el panel</td></tr>'}
+    </tbody></table>
+    <div class="h-tot"><table><tr class="sub"><td>Subtotal</td><td>${ars2.format(sub)}</td></tr><tr class="tot"><td>TOTAL</td><td>${ars2.format(sub)}</td></tr></table></div>
+    ${b.notas.trim() ? `<div class="h-notas"><small>Notas y condiciones</small><p>${esc(b.notas)}</p></div>` : ''}
+    <div class="h-pie">${esc(P.marca)} · ${esc(P.lema)}</div>
+  </div>`;
+}
+
+/* Gráfico de barras de la caja de ahorro (una serie: el título la nombra) */
+function graficoAhorro(vals){
+  const W = 640, H = 210, L = 64, R = 8, T = 20, B = 26;
+  const max = Math.max(...vals.map(v => Number(v)||0), 0);
+  const paso = (() => { if(max <= 0) return 100000; const raw = max / 3; const p = Math.pow(10, Math.floor(Math.log10(raw))); const n = raw / p; return (n <= 1 ? 1 : n <= 2 ? 2 : n <= 2.5 ? 2.5 : n <= 5 ? 5 : 10) * p; })();
+  const top = Math.max(paso * Math.ceil((max || 1) / paso), paso);
+  const y = v => T + (H - T - B) * (1 - v / top);
+  const cw = (W - L - R) / 12, bw = Math.min(26, cw * 0.56);
+  let s = `<svg class="graf" viewBox="0 0 ${W} ${H}" role="img" aria-label="Ahorro por mes ${UI.anioAhorro}">`;
+  for(let v = 0; v <= top + 1; v += paso) s += `<line class="grid" x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}"/><text x="${L - 8}" y="${y(v) + 4}" text-anchor="end">${v >= 1000000 ? (v/1000000).toLocaleString('es-AR') + ' M' : v >= 1000 ? Math.round(v/1000) + ' k' : v}</text>`;
+  const maxIdx = vals.reduce((bi, v, i) => (Number(v)||0) > (Number(vals[bi])||0) ? i : bi, 0);
+  vals.forEach((raw, i) => {
+    const v = Number(raw)||0, cx = L + cw * i + cw / 2, x = cx - bw / 2, yy = y(v), h = (H - B) - yy;
+    s += `<g class="col" data-tip="${MESES[i]}: ${plata(v)}"><rect class="hit" x="${L + cw * i}" y="${T}" width="${cw}" height="${H - T - B}"/>`;
+    if(v > 0){ const r = Math.min(4, h/2); s += `<path class="bar" style="animation-delay:${i * 0.03}s" d="M${x},${H - B} V${yy + r} Q${x},${yy} ${x + r},${yy} H${x + bw - r} Q${x + bw},${yy} ${x + bw},${yy + r} V${H - B} Z"/>`; }
+    if(v > 0 && i === maxIdx) s += `<text class="val" x="${cx}" y="${yy - 6}" text-anchor="middle">${plata(v)}</text>`;
+    s += `<text x="${cx}" y="${H - 8}" text-anchor="middle">${MES_C[i]}</text></g>`;
+  });
+  return s + `</svg>`;
+}
+function enlazarGrafico(){
+  const tip = $('#tip');
+  document.querySelectorAll('.graf g.col').forEach(g => {
+    g.onpointerenter = g.onpointermove = e => { tip.hidden = false; tip.textContent = g.dataset.tip; tip.style.left = Math.min(e.clientX + 12, innerWidth - 170) + 'px'; tip.style.top = (e.clientY - 36) + 'px'; };
+    g.onpointerleave = () => { tip.hidden = true; };
+  });
+}
+
+/* ---------------- IA ---------------- */
+function promptOrdenar(texto, conImagen){
+  const hoy = hoyISO();
+  return `Sos el asistente de organización personal de ${S.perfil.nombre || 'Benjamín Nuñez'} (marca Design | BNZ, Gdor. Virasoro, Corrientes, Argentina). Hoy es ${fDia(hoy)} de ${hoy.slice(0,4)} (${hoy}). Hablás español rioplatense.
+Te paso información desordenada${conImagen ? ' (texto y/o capturas de pantalla, por ejemplo de chats de WhatsApp)' : ' (puede ser un chat de WhatsApp copiado o notas sueltas)'}. Extraé y ordená TODO lo accionable.
+
+Áreas válidas (usá el id exacto): ${S.perfil.areas.map(a => `${a.id} = ${a.nombre}${a.det ? ' (' + a.det + ')' : ''}`).join('; ')}. Si no encaja, usá "otros".
+Categorías de movimientos: ${CATS.join(', ')}.
+
+Reglas:
+- Convertí fechas relativas ("mañana", "el viernes", "el 5", "la semana que viene") a YYYY-MM-DD contando desde hoy. Si no hay fecha, "".
+- Citas, reuniones, clases, exámenes, entregas o turnos con día concreto → "eventos" (hora "HH:MM" en 24 h o ""). Si además hay algo para preparar antes, agregalo como tarea.
+- Algo que se repite cada semana → evento con "repite":"semanal" y la fecha de la próxima vez.
+- Tareas: plazo "hoy" si es para hoy o mañana, "corto" si es dentro de unas 4 semanas, "largo" si es más o no tiene apuro. prioridad "alta" si es urgente o importante, si no "media" o "baja".
+- Plata que ya se gastó o cobró → "movimientos" (monto como número en pesos sin signo: "90 mil" = 90000, "5 lucas" = 5000, "1,5 palos" = 1500000). tipo "ingreso" o "gasto". Fecha de hoy si no se dice otra.
+- Deudas ("le debo a X", "X me debe") → "cuentas" con tipo "pagar" o "cobrar".
+- Cosas para comprar todavía → "compras".
+- No inventes datos. Lo que no sea accionable pero valga la pena recordar va en "notas" (frases cortas).
+- "resumen": una oración corta de lo que encontraste.
+
+Respondé SOLO con JSON con esta forma exacta:
+{"resumen":"","tareas":[{"titulo":"","area":"otros","plazo":"corto","fecha":"","prioridad":"media","nota":""}],"eventos":[{"titulo":"","fecha":"YYYY-MM-DD","hora":"","area":"otros","repite":"","nota":""}],"movimientos":[{"fecha":"YYYY-MM-DD","desc":"","tipo":"gasto","cat":"Otros","monto":0}],"cuentas":[{"nombre":"","tipo":"cobrar","monto":0}],"compras":[{"nombre":"","monto":0}],"notas":[""]}
+Usá listas vacías cuando no haya nada.
+
+Información:
+"""
+${texto || '(ver capturas adjuntas)'}
+"""`;
+}
+function limpiarRes(r){
+  const okArea = a => S.perfil.areas.some(x => x.id === a) ? a : 'otros';
+  const arr = v => Array.isArray(v) ? v : [];
+  const str = v => typeof v === 'string' ? v.trim() : '';
+  const out = {resumen: str(r && r.resumen)};
+  out.tareas = arr(r && r.tareas).filter(t => str(t.titulo)).map(t => ({titulo:str(t.titulo), area:okArea(t.area), plazo:['hoy','corto','largo'].includes(t.plazo) ? t.plazo : 'corto', fecha:isoValido(t.fecha) ? t.fecha : '', prioridad:['alta','media','baja'].includes(t.prioridad) ? t.prioridad : 'media', nota:str(t.nota)}));
+  out.eventos = arr(r && r.eventos).filter(e => str(e.titulo) && isoValido(e.fecha)).map(e => ({titulo:str(e.titulo), fecha:e.fecha, hora:/^\d{2}:\d{2}$/.test(e.hora || '') ? e.hora : '', area:okArea(e.area), repite:e.repite === 'semanal' ? 'semanal' : '', nota:str(e.nota)}));
+  out.movimientos = arr(r && r.movimientos).filter(m => str(m.desc) && Number(m.monto) > 0).map(m => ({fecha:isoValido(m.fecha) ? m.fecha : hoyISO(), desc:str(m.desc), tipo:m.tipo === 'ingreso' ? 'ingreso' : 'gasto', cat:CATS.includes(m.cat) ? m.cat : 'Otros', monto:Number(m.monto)}));
+  out.cuentas = arr(r && r.cuentas).filter(c => str(c.nombre)).map(c => ({nombre:str(c.nombre), tipo:c.tipo === 'pagar' ? 'pagar' : 'cobrar', monto:Number(c.monto) || 0}));
+  out.compras = arr(r && r.compras).filter(c => str(c.nombre)).map(c => ({nombre:str(c.nombre), monto:Number(c.monto) || 0}));
+  out.notas = arr(r && r.notas).map(str).filter(Boolean);
+  return out;
+}
+async function iaOrdenar(){
+  const sample = SY.sample; if(!sample || UI.iaPensando) return;
+  const t = $('#ia-txt'); if(t) UI.iaTexto = t.value;
+  if(!UI.iaTexto.trim() && !UI.iaImgs.length){ toast('Escribí o pegá algo primero.'); if(t) t.focus(); return; }
+  UI.iaPensando = true; UI.iaError = ''; UI.iaRes = null; UI.iaStream = ''; render(false);
+  try {
+    const opts = {modelTier:'default', onText: ({text}) => { UI.iaStream = text; const pre = $('#main pre'); if(pre) pre.textContent = text.slice(-600); else programarRender(); }};
+    if(UI.iaImgs.length){
+      const lim = await sample.limits().catch(() => null);
+      if(lim && lim.images) opts.images = UI.iaImgs.slice(0, lim.images.maxCount || 4).map(x => x.blob);
+      else toast('Las capturas no se pueden mandar en esta vista; uso solo el texto.');
+    }
+    const r = await sample.json(promptOrdenar(UI.iaTexto, !!opts.images), opts);
+    UI.iaRes = limpiarRes(r); UI.iaSel = {};
+    ['tareas','eventos','movimientos','cuentas','compras'].forEach(k => UI.iaRes[k].forEach((_, i) => UI.iaSel[k + i] = true));
+  } catch(e){
+    UI.iaError = ({not_granted:'No diste permiso para usar la IA en esta página. Podés habilitarlo en los permisos del sitio.', rate_limited:'La IA está recibiendo muchos pedidos. Esperá un minuto y probá de nuevo.', invalid_json:'La IA respondió algo que no se pudo leer. Probá de nuevo o con menos texto.', prompt_too_large:'Es demasiado texto de una vez. Dividilo en partes.', image_rejected:'Una de las capturas no se pudo leer. Probá con otra.'})[e && e.code] || ('No se pudo ordenar: ' + ((e && e.message) || 'error desconocido'));
+  }
+  UI.iaPensando = false; UI.iaStream = ''; render(false);
+}
+function iaAplicar(){
+  const r = UI.iaRes; if(!r) return;
+  const sel = (k, i) => !!UI.iaSel[k + i];
+  let n = {tareas:0, eventos:0, movimientos:0, cuentas:0, compras:0};
+  r.tareas.forEach((t, i) => { if(sel('tareas', i)){ TAREAS().push({id:uid(), ...t, diaria:false, hecha:false, hechaEn:'', creada:hoyISO()}); n.tareas++; } });
+  r.eventos.forEach((e, i) => { if(sel('eventos', i)){ EVENTOS().push({id:uid(), ...e}); n.eventos++; } });
+  r.movimientos.forEach((m, i) => { if(sel('movimientos', i)){ S.eco.movimientos.push({id:uid(), ...m}); n.movimientos++; } });
+  r.cuentas.forEach((c, i) => { if(sel('cuentas', i)){ S.eco.metas.push({id:uid(), nombre:c.nombre, tipo:c.tipo, monto:c.monto, hecha:false}); n.cuentas++; } });
+  r.compras.forEach((c, i) => { if(sel('compras', i)){ S.eco.compras.push({id:uid(), nombre:c.nombre, monto:c.monto, hecha:false}); n.compras++; } });
+  const partes = Object.entries(n).filter(([,v]) => v).map(([k,v]) => `${v} ${({tareas:'tareas', eventos:'eventos', movimientos:'movimientos', cuentas:'cuentas', compras:'compras'})[k]}`);
+  if(n.tareas) marcar('tareas'); if(n.eventos) marcar('eventos'); if(n.movimientos || n.cuentas || n.compras) marcar('eco');
+  const ahora = new Date();
+  S.ia.historial.push({fecha:hoyISO(), hora:`${pad(ahora.getHours())}:${pad(ahora.getMinutes())}`, texto:UI.iaTexto.slice(0, 400), resumen:r.resumen, conteo:partes.join(' · ')});
+  S.ia.historial = S.ia.historial.slice(-30); marcar('ia');
+  UI.iaRes = null; UI.iaTexto = ''; UI.iaImgs.forEach(x => URL.revokeObjectURL(x.url)); UI.iaImgs = []; UI.iaSel = {};
+  toast(partes.length ? `Guardado: ${partes.join(', ')}` : 'No había nada seleccionado.');
+  render(false);
+}
+function resumenParaChat(){
+  const hoy = hoyISO();
+  const pend = TAREAS().filter(t => !tareaHecha(t)).sort(ordenarTareas).slice(0, 60).map(t => ({t:t.titulo, area:area(t.area).nombre, plazo:t.plazo, fecha:t.fecha, prio:t.prioridad}));
+  const ag = agendaEntre(sumarDias(hoy, -7), sumarDias(hoy, 45)).slice(0, 40).map(x => ({fecha:x.fecha, hora:x.ev?.hora || '', que:x.ev ? x.ev.titulo : 'Vence: ' + x.t.titulo}));
+  const e = resumenEco();
+  const movs = S.eco.movimientos.slice().sort((a,b) => b.fecha.localeCompare(a.fecha)).slice(0, 80).map(m => ({f:m.fecha, d:m.desc, tipo:m.tipo, cat:m.cat, monto:m.monto}));
+  return JSON.stringify({hoy, tareasPendientes:pend, agenda:ag, economia:{ingresosFijos:e.ing, gastosFijosYServicios:e.egresos, balanceMensual:e.balance, ahorroAnio:e.ahorro, metasYCuentas:S.eco.metas.filter(m => !m.hecha).map(m => ({n:m.nombre, tipo:m.tipo, monto:m.monto})), movimientosRecientes:movs}});
+}
+async function iaPreguntar(){
+  const sample = SY.sample; if(!sample || UI.chatPensando) return;
+  const inp = $('#chat-txt'); const q = (inp ? inp.value : UI.chatTexto).trim(); if(!q) return;
+  S.ia.chat.push({role:'user', content:q}); UI.chatTexto = ''; UI.chatPensando = true; UI.iaStream = ''; render(false);
+  const sistema = `Sos el asistente personal de ${S.perfil.nombre || 'Benjamín Nuñez'} (Design | BNZ). Respondé en español rioplatense, corto y concreto, usando SOLO estos datos suyos (JSON). Si te pide un plan, ordenalo por prioridad y horario. No inventes datos que no estén.\nDatos: ${resumenParaChat()}`;
+  const turnos = S.ia.chat.slice(-10).map(m => ({role:m.role, content:m.content}));
+  while(turnos.length && turnos[0].role !== 'user') turnos.shift();
+  turnos[0] = {role:'user', content: sistema + '\n\nPregunta: ' + turnos[0].content};
+  try {
+    const res = await sample(turnos, {cache:false, onText: ({text}) => { UI.iaStream = text; const b = document.querySelector('#chat .burbuja.ia:last-child'); if(b) b.textContent = text; const ch = $('#chat'); if(ch) ch.scrollTop = ch.scrollHeight; }});
+    S.ia.chat.push({role:'assistant', content:res.text});
+  } catch(e){
+    S.ia.chat.push({role:'assistant', content: e && e.code === 'rate_limited' ? 'Estoy con muchos pedidos. Probá en un minuto.' : e && e.code === 'not_granted' ? 'No tengo permiso para usar la IA en esta página.' : 'No pude responder: ' + ((e && e.message) || 'error')});
+  }
+  S.ia.chat = S.ia.chat.slice(-20); marcar('ia');
+  UI.chatPensando = false; UI.iaStream = ''; render(false);
+  const i2 = $('#chat-txt'); if(i2) i2.focus();
+}
+
+/* ---------------- Copias: PC, importación y migración ---------------- */
+async function guardarCopiaPC(){
+  const datos = {app:'Design | BNZ Gestión', version:2, exportado:new Date().toISOString(), perfil:S.perfil, tareas:S.tareas, eventos:S.eventos, eco:S.eco, pres:S.pres, ia:S.ia};
+  const nombre = `bnz-copia-${hoyISO()}.json`;
+  const dl = SY.downloads;
+  try {
+    if(dl) await dl.save({filename:nombre, data:JSON.stringify(datos, null, 2)});
+    else { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(datos, null, 2)], {type:'application/json'})); a.download = nombre; document.body.appendChild(a); a.click(); a.remove(); }
+    S.perfil.ultimaCopiaPC = hoyISO(); marcar('perfil'); toast('Copia guardada en tu computadora'); render(false);
+    if($('#modal-root').innerHTML) abrirAjustes();
+  } catch(e){ if(e && e.code !== 'declined') toast('No se pudo guardar la copia acá.', 'err'); }
+}
+function importarDatos(d){
+  if(!d || typeof d !== 'object') throw new Error('formato');
+  const tareasArr = Array.isArray(d.tareas) ? d.tareas : d.tareas && d.tareas.items;
+  if(!Array.isArray(tareasArr) || !d.eco) throw new Error('formato');
+  const eventosArr = Array.isArray(d.eventos) ? d.eventos : (d.eventos && d.eventos.items) || [];
+  const perfilVals = {...S.perfil, ...(d.perfil || {})};
+  if(Array.isArray(d.areas) && d.areas.length) perfilVals.areas = d.areas;
+  S.perfil = normalizarDoc('perfil', perfilVals);
+  S.tareas = {items: tareasArr};
+  S.eventos = {items: eventosArr};
+  S.eco = normalizarDoc('eco', d.eco);
+  if(d.pres) S.pres = normalizarDoc('pres', d.pres);
+  if(d.ia) S.ia = normalizarDoc('ia', d.ia);
+  DOCS.forEach(marcar);
+}
+const tenc = new TextEncoder(), tdec = new TextDecoder();
+const unb64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+async function abrirBovedaVieja(pass){
+  const raw = JSON.parse(lsGet('bnz.boveda.v1'));
+  const base = await crypto.subtle.importKey('raw', tenc.encode(pass), 'PBKDF2', false, ['deriveKey']);
+  const key = await crypto.subtle.deriveKey({name:'PBKDF2', salt:unb64(raw.salt), iterations:250000, hash:'SHA-256'}, base, {name:'AES-GCM', length:256}, false, ['decrypt']);
+  const pt = await crypto.subtle.decrypt({name:'AES-GCM', iv:unb64(raw.iv)}, key, unb64(raw.ct));
+  return JSON.parse(tdec.decode(pt));
+}
+function abrirMigracion(){
+  $('#modal-root').innerHTML = `<div class="modal" data-act="modal-fondo"><div class="modal-c" role="dialog" aria-modal="true" aria-labelledby="mg-t">
+    <div style="display:flex;justify-content:space-between;align-items:center"><h2 id="mg-t">Traer datos de la versión anterior</h2><button class="btn btn-ghost" data-act="modal-cerrar" aria-label="Cerrar">✕</button></div>
+    <p>Ingresá la contraseña que usabas en la versión anterior. Se usa una sola vez para abrir esos datos y pasarlos a la nube. Van a reemplazar lo que hay ahora.</p>
+    <form id="f-migrar" class="fila-acc"><input class="inp" type="password" id="mg-clave" placeholder="Contraseña anterior" style="flex:1;min-width:200px" autocomplete="off"><button class="btn btn-primary" type="submit">Traer datos</button></form>
+    <span class="msg" id="mg-msg"></span>
+  </div></div>`;
+  $('#mg-clave').focus();
+}
+async function migrar(pass){
+  const msg = $('#mg-msg');
+  try {
+    if(!window.crypto || !crypto.subtle) throw new Error('cripto');
+    const d = await abrirBovedaVieja(pass);
+    importarDatos(d);
+    S.perfil.migrado = true; marcar('perfil');
+    cerrarModal(); toast('Datos de la versión anterior traídos'); render(true);
+  } catch(e){ if(msg){ msg.textContent = e && e.message === 'formato' ? 'Los datos viejos no tienen el formato esperado.' : 'Contraseña incorrecta.'; msg.className = 'msg err'; } }
+}
+
+/* ---------------- PDF del presupuesto ---------------- */
+const H2P = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+async function presPDF(btn){
+  const dl = SY.downloads;
+  const b = S.pres.borrador;
+  const nombre = `Presupuesto ${b.numero}${b.cliente ? ' - ' + b.cliente.replace(/[\\/:*?"<>|]/g, '') : ''}.pdf`;
+  if(btn){ btn.disabled = true; btn.textContent = 'Generando PDF…'; }
+  let cont = null;
+  try {
+    if(!window.html2pdf) await cargarScript(H2P);
+    cont = document.createElement('div');
+    cont.style.cssText = 'position:fixed;left:0;top:0;z-index:-1;pointer-events:none;width:210mm';
+    cont.innerHTML = htmlHoja();
+    document.body.appendChild(cont);
+    const el = cont.firstElementChild;
+    el.removeAttribute('id'); el.style.width = '210mm'; el.style.minHeight = '0'; el.style.boxShadow = 'none';
+    const blob = await window.html2pdf().set({margin:0, image:{type:'jpeg', quality:0.97}, html2canvas:{scale:2, backgroundColor:'#ffffff', scrollX:0, scrollY:0}, jsPDF:{unit:'mm', format:'a4', orientation:'portrait'}, pagebreak:{mode:['avoid-all']}}).from(el).outputPdf('blob');
+    if(dl) await dl.save({filename:nombre, data:blob});
+    else { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = nombre; document.body.appendChild(a); a.click(); a.remove(); }
+    toast('PDF listo');
+  } catch(e){
+    if(!(e && e.code === 'declined')) toast('No se pudo generar el PDF en esta vista.', 'err');
+  } finally {
+    if(cont) cont.remove();
+    if(btn){ btn.disabled = false; btn.textContent = 'Descargar PDF'; }
+  }
+}
+
+/* ---------------- Ajustes ---------------- */
+async function abrirAjustes(){
+  const P = S.perfil, tema = lsGet('bnz.tema') || 'sistema';
+  $('#modal-root').innerHTML = `<div class="modal" data-act="modal-fondo"><div class="modal-c" role="dialog" aria-modal="true" aria-labelledby="aj-t">
+    <div style="display:flex;justify-content:space-between;align-items:center"><h2 id="aj-t">Ajustes y copias</h2><button class="btn btn-ghost" data-act="modal-cerrar" aria-label="Cerrar">✕</button></div>
+    <section><h3>Guardado</h3>
+      <p>${SY.modo === 'nube' ? 'Cada cambio se guarda solo en la nube al instante y se actualiza en vivo en tu PC y tu celular. Además se hace una copia completa por día (se guardan las últimas 14).' : 'Modo sin nube: se guarda solo en este navegador. Completá config.js para sincronizar (README, paso 2).'}</p>
+      <span class="sync" data-s="ok" style="color:var(--fg-2)"><i></i><span class="txt"></span></span>
+      ${window.BNZ_SALIR ? '<div class="fila-acc"><button class="btn btn-sm" data-act="salir">Cerrar sesión en este dispositivo</button></div>' : ''}
+    </section>
+    <section><h3>Copia en tu computadora</h3>
+      <p>${P.ultimaCopiaPC ? `Última copia guardada: ${fLarga(P.ultimaCopiaPC)}.` : 'Todavía no guardaste ninguna.'} Es un archivo .json con todo; guardalo en una carpeta tuya o en Drive.</p>
+      <div class="fila-acc"><button class="btn btn-primary" data-act="exportar">Guardar copia en la PC</button>
+        <label class="btn" for="aj-importar" style="cursor:pointer">Restaurar desde archivo</label><input type="file" id="aj-importar" accept=".json,application/json" hidden>
+        <span class="msg" id="aj-msg-bk"></span></div>
+    </section>
+    <section><h3>Copias en la nube</h3><div class="respaldos" id="aj-respaldos">${SY.db ? '<div class="skel" style="height:34px"></div>' : '<p>No disponible en esta vista.</p>'}</div></section>
+    <section><h3>Perfil</h3>
+      <div class="dos"><div class="campo"><label class="lbl" for="aj-nombre">Nombre</label><input class="inp" id="aj-nombre" data-perfil="nombre" value="${esc(P.nombre)}"></div>
+      <div class="campo"><label class="lbl" for="aj-wa">WhatsApp (549…)</label><input class="inp" id="aj-wa" data-perfil="whatsapp" inputmode="tel" value="${esc(P.whatsapp)}"></div></div>
+    </section>
+    <section><h3>Tema</h3>
+      <div class="seg" role="group" aria-label="Tema">${[['sistema','Según el sistema'],['light','Claro (papel)'],['dark','Oscuro (tinta)']].map(([v,n]) => `<button data-act="tema" data-v="${v}" aria-pressed="${tema === v}">${n}</button>`).join('')}</div>
+    </section>
+  </div></div>`;
+  estadoSync();
+  if(SY.db){
+    try {
+      const snap = await SY.db.doc(`${SY.base}/perfil`).collection('respaldos').get();
+      const box = $('#aj-respaldos'); if(!box) return;
+      const docs = snap.docs.filter(d => d.exists).sort((a, b) => b.id.localeCompare(a.id));
+      box.innerHTML = docs.length ? docs.map(d => { const v = d.data(); const n = v.datos && v.datos.tareas ? (v.datos.tareas.items || []).length : 0; return `<div><span><b class="mono">${fLarga(d.id)}</b> · ${n} tareas</span><button class="btn btn-sm" data-act="restaurar" data-id="${d.id}">Restaurar</button></div>`; }).join('') : '<p>La primera copia diaria se crea sola hoy.</p>';
+    } catch(e){ const box = $('#aj-respaldos'); if(box) box.innerHTML = '<p>No se pudieron leer las copias ahora.</p>'; }
+  }
+}
+function cerrarModal(){ $('#modal-root').innerHTML = ''; }
+function aplicarTema(v){ if(v === 'light' || v === 'dark') document.documentElement.setAttribute('data-theme', v); else document.documentElement.removeAttribute('data-theme'); }
+aplicarTema(lsGet('bnz.tema'));
+
+/* ---------------- Eventos ---------------- */
+const COL = {
+  tareas: [() => TAREAS(), 'tareas'], eventos: [() => EVENTOS(), 'eventos'], mov: [() => S.eco.movimientos, 'eco'],
+  ingresos: [() => S.eco.ingresos, 'eco'], gastos: [() => S.eco.gastos, 'eco'], servicios: [() => S.eco.servicios, 'eco'],
+  metas: [() => S.eco.metas, 'eco'], compras: [() => S.eco.compras, 'eco'], items: [() => S.pres.borrador.items, 'pres'], hist: [() => S.pres.historial, 'pres']
+};
+function quitar(col, id){ const [get, doc] = COL[col]; const arr = get(); const i = arr.findIndex(x => x.id === id); if(i >= 0){ arr.splice(i, 1); marcar(doc); } }
+
+document.addEventListener('click', async e => {
+  const nb = e.target.closest('[data-nav-btn]'); if(nb){ ir(nb.dataset.navBtn); return; }
+  const na = e.target.closest('a[data-nav]'); if(na){ e.preventDefault(); ir(na.dataset.nav); return; }
+  const el = e.target.closest('[data-act]'); if(!el) return;
+  const act = el.dataset.act, id = el.dataset.id;
+  if(act === 'modal-fondo' && e.target !== el) return;
+  switch(act){
+    case 'ajustes': abrirAjustes(); return;
+    case 'salir': if(window.BNZ_SALIR) window.BNZ_SALIR(); return;
+    case 'modal-cerrar': case 'modal-fondo': cerrarModal(); return;
+    case 'tema': lsSet('bnz.tema', el.dataset.v); aplicarTema(el.dataset.v); abrirAjustes(); return;
+    case 'exportar': guardarCopiaPC(); return;
+    case 'migrar': abrirMigracion(); return;
+    case 'migrar-no': lsSet('bnz.migracion.ignorada', '1'); render(false); return;
+    case 'restaurar': {
+      if(el.dataset.confirm !== '1'){ el.dataset.confirm = '1'; el.textContent = '¿Reemplazar todo?'; el.classList.add('btn-accent'); return; }
+      try { const d = await SY.db.doc(`${SY.base}/perfil/respaldos/${id}`).get(); if(d.exists){ importarDatos(clon(d.data().datos)); cerrarModal(); toast('Copia del ' + fLarga(id) + ' restaurada'); render(true); } }
+      catch(ex){ toast('No se pudo restaurar esa copia.', 'err'); }
+      return;
+    }
+    case 'borrar':
+      if(el.dataset.confirm !== '1'){ el.dataset.confirm = '1'; el.dataset.txt = el.textContent; el.textContent = '¿Seguro?'; setTimeout(() => { if(el.isConnected){ el.dataset.confirm = ''; el.textContent = el.dataset.txt; } }, 3000); return; }
+      { const li = el.closest('.tarea, .ed-fila, tr, li'); if(li) li.classList.add('saliendo'); }
+      setTimeout(() => { quitar(el.dataset.col, id); if(el.dataset.col === 'tareas' && UI.tEditar === id) UI.tEditar = null; if(el.dataset.col === 'eventos' && UI.evEditar === id) UI.evEditar = null; render(false); }, 160);
+      return;
+    case 'tarea-toggle': {
+      const t = TAREAS().find(x => x.id === id); if(!t) return;
+      if(t.diaria) t.hechaEn = t.hechaEn === hoyISO() ? '' : hoyISO(); else { t.hecha = !t.hecha; t.hechaFecha = t.hecha ? hoyISO() : ''; }
+      marcar('tareas');
+      el.classList.add('pop'); el.closest('.tarea')?.classList.toggle('hecha', tareaHecha(t));
+      if(tareaHecha(t)) toast('¡Hecha! ' + (TAREAS().filter(x => !tareaHecha(x)).length) + ' pendientes');
+      setTimeout(() => render(false), 420); return;
+    }
+    case 'tarea-editar': UI.tEditar = id; render(false); $('#t-titulo').focus(); window.scrollTo({top:0, behavior:'smooth'}); return;
+    case 'tarea-cancelar': UI.tEditar = null; render(false); return;
+    case 't-plazo': UI.tPlazo = el.dataset.v; render(false); return;
+    case 'mov-mes': { const [y,m] = UI.mesMov.split('-').map(Number); const d = new Date(y, m - 1 + Number(el.dataset.d), 1); UI.mesMov = `${d.getFullYear()}-${pad(d.getMonth()+1)}`; render(false); return; }
+    case 'ahorro-anio': UI.anioAhorro = String(Number(UI.anioAhorro) + Number(el.dataset.d)); render(false); return;
+    case 'eco-add': {
+      const col = el.dataset.col, nuevo = {id:uid(), nombre:'', monto:0};
+      if(col === 'metas'){ nuevo.tipo = 'meta'; nuevo.hecha = false; } if(col === 'compras') nuevo.hecha = false;
+      S.eco[col].push(nuevo); marcar('eco'); render(false); const f = document.getElementById(`f-${col}-${nuevo.id}-nombre`); if(f) f.focus(); return;
+    }
+    case 'eco-check': { const x = COL[el.dataset.col][0]().find(z => z.id === id); if(x){ x.hecha = el.checked; marcar('eco'); render(false); } return; }
+    case 'cal-mes': { const [y,m] = UI.calMes.split('-').map(Number); const d = new Date(y, m - 1 + Number(el.dataset.d), 1); UI.calMes = `${d.getFullYear()}-${pad(d.getMonth()+1)}`; render(false); return; }
+    case 'cal-hoy': UI.calMes = hoyISO().slice(0,7); UI.calSel = hoyISO(); render(false); return;
+    case 'cal-dia': UI.calSel = el.dataset.f; render(false); return;
+    case 'ev-editar': UI.evEditar = id; render(false); $('#e-titulo').focus(); window.scrollTo({top:0, behavior:'smooth'}); return;
+    case 'ev-cancelar': UI.evEditar = null; render(false); return;
+    case 'item-add': { const n = {id:uid(), cant:1, desc:'', precio:0}; S.pres.borrador.items.push(n); marcar('pres'); render(false); const f = document.getElementById(`f-items-${n.id}-desc`); if(f) f.focus(); return; }
+    case 'pres-nuevo': {
+      const max = S.pres.historial.reduce((a, h) => Math.max(a, parseInt(h.numero, 10) || 0), 0);
+      S.pres.seq = Math.max(S.pres.seq || 1, max + 1);
+      S.pres.borrador = presNuevo(S.pres.seq); marcar('pres'); render(false); $('#b-cliente').focus(); return;
+    }
+    case 'pres-guardar': {
+      const b = S.pres.borrador;
+      const total = b.items.reduce((a, i) => a + (Number(i.cant)||0) * (Number(i.precio)||0), 0);
+      const copia = clon(b);
+      const ex = S.pres.historial.find(h => h.id === b.id);
+      if(ex) Object.assign(ex, copia, {total, estado:ex.estado, cobroRegistrado:ex.cobroRegistrado});
+      else S.pres.historial.push({...copia, total, estado:'borrador', cobroRegistrado:false});
+      const n = parseInt(b.numero, 10) || 0; if(n >= (S.pres.seq || 1)) S.pres.seq = n + 1;
+      marcar('pres'); toast(ex ? 'Presupuesto actualizado' : 'Presupuesto guardado en el historial'); render(false); return;
+    }
+    case 'pres-pdf': presPDF(el); return;
+    case 'hist-abrir': { const h = S.pres.historial.find(x => x.id === id); if(h){ const c = clon(h); delete c.total; delete c.estado; delete c.cobroRegistrado; S.pres.borrador = c; marcar('pres'); render(false); window.scrollTo({top:0, behavior:'smooth'}); } return; }
+    case 'hist-cobro': {
+      const h = S.pres.historial.find(x => x.id === id); if(!h || h.cobroRegistrado) return;
+      S.eco.movimientos.push({id:uid(), fecha:hoyISO(), desc:`Presupuesto ${h.numero} · ${h.cliente || 'cliente'}`, tipo:'ingreso', cat:'Trabajo', monto:h.total});
+      h.cobroRegistrado = true; marcar('eco'); marcar('pres'); toast('Ingreso registrado en Economía'); render(false); return;
+    }
+    case 'ia-modo': UI.iaModo = el.dataset.v; render(false); return;
+    case 'ia-ej': UI.iaTexto = el.dataset.t; render(false); $('#ia-txt').focus(); return;
+    case 'ia-limpiar': UI.iaTexto = ''; UI.iaImgs.forEach(x => URL.revokeObjectURL(x.url)); UI.iaImgs = []; UI.iaRes = null; UI.iaError = ''; render(false); return;
+    case 'ia-quitar-img': { const i = Number(el.dataset.i); const x = UI.iaImgs.splice(i, 1)[0]; if(x) URL.revokeObjectURL(x.url); vivos(); return; }
+    case 'ia-ordenar': iaOrdenar(); return;
+    case 'ia-aplicar': iaAplicar(); return;
+    case 'chat-limpiar': S.ia.chat = []; marcar('ia'); render(false); return;
+  }
+});
+
+document.addEventListener('submit', e => {
+  const id = e.target.id;
+  if(id === 'f-hero-ia'){ e.preventDefault(); const t = $('#hero-ia-txt').value.trim(); if(!t){ $('#hero-ia-txt').focus(); return; } UI.heroTexto = ''; UI.iaTexto = t; UI.iaModo = 'ordenar'; ir('ia'); iaOrdenar(); return; }
+  if(id === 'f-chat'){ e.preventDefault(); iaPreguntar(); return; }
+  if(id === 'f-migrar'){ e.preventDefault(); migrar($('#mg-clave').value); return; }
+  if(id === 'f-tarea'){
+    e.preventDefault();
+    const titulo = $('#t-titulo').value.trim(); if(!titulo){ $('#t-titulo').focus(); return; }
+    const datos = {titulo, area:$('#t-area').value, plazo:$('#t-plazo').value, fecha:$('#t-fecha').value, prioridad:$('#t-prio').value, nota:$('#t-nota').value.trim(), diaria:$('#t-diaria').checked};
+    if(datos.diaria) datos.plazo = 'hoy';
+    if(UI.tEditar){ const t = TAREAS().find(x => x.id === UI.tEditar); if(t) Object.assign(t, datos); UI.tEditar = null; toast('Tarea actualizada'); }
+    else { TAREAS().push({id:uid(), ...datos, hecha:false, hechaEn:'', creada:hoyISO()}); toast('Tarea agregada'); }
+    marcar('tareas'); render(false); const f = $('#t-titulo'); if(f) f.focus();
+  }
+  if(id === 'f-evento'){
+    e.preventDefault();
+    const titulo = $('#e-titulo').value.trim(), fecha = $('#e-fecha').value; if(!titulo || !fecha) return;
+    const datos = {titulo, fecha, hora:$('#e-hora').value, area:$('#e-area').value, repite:$('#e-repite').value, nota:$('#e-nota').value.trim()};
+    if(UI.evEditar){ const ev = EVENTOS().find(x => x.id === UI.evEditar); if(ev) Object.assign(ev, datos); UI.evEditar = null; }
+    else EVENTOS().push({id:uid(), ...datos});
+    UI.calSel = fecha; UI.calMes = fecha.slice(0,7);
+    marcar('eventos'); toast('Actividad agendada'); render(false);
+  }
+  if(id === 'f-mov'){
+    e.preventDefault();
+    const monto = numero($('#m-monto').value), desc = $('#m-desc').value.trim(), fecha = $('#m-fecha').value;
+    if(!desc || !fecha || monto <= 0){ ($('#m-desc').value.trim() ? $('#m-monto') : $('#m-desc')).focus(); return; }
+    S.eco.movimientos.push({id:uid(), fecha, desc, tipo:$('#m-tipo').value, cat:$('#m-cat').value, monto});
+    UI.mesMov = fecha.slice(0,7);
+    marcar('eco'); toast('Movimiento registrado'); render(false); const f = $('#m-desc'); if(f) f.focus();
+  }
+});
+
+document.addEventListener('input', e => {
+  const el = e.target, d = el.dataset;
+  if(el.id === 'hero-ia-txt'){ UI.heroTexto = el.value; return; }
+  if(el.id === 'ia-txt'){ UI.iaTexto = el.value; return; }
+  if(el.id === 'chat-txt'){ UI.chatTexto = el.value; return; }
+  if(d.iasel){ UI.iaSel[d.iasel] = el.checked; el.closest('.res-item')?.classList.toggle('off', !el.checked); const b = document.querySelector('[data-act="ia-aplicar"]'); const n = Object.values(UI.iaSel).filter(Boolean).length; if(b) b.textContent = `Guardar ${n} seleccionados`; return; }
+  if(d.col && d.f && COL[d.col]){
+    const [get, doc] = COL[d.col]; const x = get().find(z => z.id === d.id); if(!x) return;
+    x[d.f] = d.n ? (d.f === 'cant' ? numeroSimple(el.value) : numero(el.value)) : el.value;
+    marcar(doc); vivos(); return;
+  }
+  if(d.ahorro != null){ if(!S.eco.ahorro[UI.anioAhorro]) S.eco.ahorro[UI.anioAhorro] = Array(12).fill(0); S.eco.ahorro[UI.anioAhorro][Number(d.ahorro)] = numero(el.value); marcar('eco'); vivos(); return; }
+  if(d.pres){ S.pres.borrador[d.pres] = el.value; marcar('pres'); vivos(); return; }
+  if(d.perfil){ S.perfil[d.perfil] = el.value; marcar('perfil'); vivos(); return; }
+});
+document.addEventListener('change', e => {
+  const el = e.target;
+  if(el.id === 't-filtro-area'){ UI.tArea = el.value; render(false); return; }
+  if(el.id === 't-ver-hechas'){ UI.tHechas = el.checked; render(false); return; }
+  if(el.id === 'ia-img'){
+    const files = [...el.files].filter(f => f.type.startsWith('image/')).slice(0, 4 - UI.iaImgs.length);
+    files.forEach(f => UI.iaImgs.push({blob:f, url:URL.createObjectURL(f)}));
+    el.value = ''; render(false); return;
+  }
+  if(el.id === 'aj-importar'){
+    const file = el.files[0]; if(!file) return;
+    const rd = new FileReader();
+    rd.onload = () => { try { importarDatos(JSON.parse(rd.result)); cerrarModal(); toast('Copia restaurada'); render(true); } catch(ex){ const m = $('#aj-msg-bk'); if(m){ m.textContent = 'Ese archivo no es una copia válida de este sitio.'; m.className = 'msg err'; } } };
+    rd.readAsText(file); return;
+  }
+  if(el.dataset.hist){ const h = S.pres.historial.find(x => x.id === el.dataset.hist); if(h){ h.estado = el.value; marcar('pres'); render(false); } return; }
+  if(el.tagName === 'SELECT' && el.dataset.col){ render(false); return; }
+});
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape' && $('#modal-root').innerHTML) cerrarModal();
+  if(e.key === 'Enter' && (e.ctrlKey || e.metaKey)){
+    if(e.target.id === 'ia-txt'){ e.preventDefault(); iaOrdenar(); }
+    if(e.target.id === 'hero-ia-txt'){ e.preventDefault(); $('#f-hero-ia').requestSubmit(); }
+  }
+});
+document.addEventListener('paste', e => {
+  if(UI.vista !== 'ia' || UI.iaModo !== 'ordenar') return;
+  const imgs = [...(e.clipboardData?.files || [])].filter(f => f.type.startsWith('image/'));
+  if(imgs.length){ e.preventDefault(); imgs.slice(0, 4 - UI.iaImgs.length).forEach(f => UI.iaImgs.push({blob:f, url:URL.createObjectURL(f)})); render(false); toast('Captura adjuntada'); }
+});
+/* Arrastrar tareas entre columnas */
+document.addEventListener('dragstart', e => { const li = e.target.closest && e.target.closest('.tarea[draggable="true"]'); if(!li) return; e.dataTransfer.setData('text/plain', li.dataset.tid); e.dataTransfer.effectAllowed = 'move'; li.classList.add('arrastrando'); });
+document.addEventListener('dragend', e => { document.querySelectorAll('.arrastrando,.sobre').forEach(x => x.classList.remove('arrastrando','sobre')); });
+document.addEventListener('dragover', e => { const c = e.target.closest && e.target.closest('[data-drop]'); if(!c) return; e.preventDefault(); document.querySelectorAll('.sobre').forEach(x => x !== c && x.classList.remove('sobre')); c.classList.add('sobre'); });
+document.addEventListener('drop', e => {
+  const c = e.target.closest && e.target.closest('[data-drop]'); if(!c) return; e.preventDefault();
+  const t = TAREAS().find(x => x.id === e.dataTransfer.getData('text/plain')); if(!t) return;
+  if(t.plazo !== c.dataset.drop || t.diaria){ t.plazo = c.dataset.drop; if(c.dataset.drop !== 'hoy') t.diaria = false; marcar('tareas'); toast('Movida a ' + ({hoy:'Hoy', corto:'Corto plazo', largo:'Largo plazo'})[c.dataset.drop]); }
+  render(false);
+});
+/* Reloj del inicio */
+setInterval(() => { document.querySelectorAll('[data-reloj]').forEach(el => el.textContent = reloj()); }, 10000);
+/* Si el día cambia con la página abierta, se refresca */
+let diaActual = hoyISO();
+setInterval(() => { if(hoyISO() !== diaActual){ diaActual = hoyISO(); UI.respaldoHecho = false; respaldoDiario(); render(false); } }, 60000);
+
+/* ---------------- Arranque ---------------- */
+const h0 = location.hash.slice(1); if(VISTAS.some(v => v.id === h0)) UI.vista = h0;
+pintarShell(); render(true);
+conectar();
+})();
+</script>
+
+<script>
+if('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
+</script>
+</body>
+</html>
